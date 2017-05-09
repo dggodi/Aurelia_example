@@ -1,0 +1,17 @@
+﻿<template bindable="name">
+    <require from="./yes-or-no.html"></require>
+    <require from="./say-goodbye.html"></require>
+
+    <!-- 
+        debounce -  prevents the binding from being updated until a specified interval has passed
+                    default is 250 ms
+
+        updateTrigger - override the input events that cause the element's value to be written to the view-model
+                        default is change
+    -->
+    <p>What is your name? <input type="text" value.bind="name & debounce:850 & updateTrigger:'blur'" /></p>
+    <yes-or-no question="Are you leaving?" answer.two-way="sayGoodbye"></yes-or-no>
+    
+    <!-- if (sayGoodbye) then bind name to say-goodbye-->
+    <say-goodbye if.bind="sayGoodbye" name.bind="name"></say-goodbye>
+</template>

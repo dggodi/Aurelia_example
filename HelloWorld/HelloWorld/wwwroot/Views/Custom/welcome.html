@@ -1,0 +1,35 @@
+<template>
+    <!-- bind html element -->
+    <require from="../../../wwwroot/views/custom/resources/elements/html-only/bind-html.html"></require>
+    <h2>html custom element</h2>
+    <bind-html first-name="Albert" last-name="Einstein"></bind-html>
+
+    <!-- bind html elements -->
+    <require from="../../../wwwroot/views/custom/resources/elements/html-only/example.html"></require>
+
+    <h2>Hello, ${guest}!</h2>
+    <example name.two-way="guest"></example>
+
+    <!-- custom elements -->
+    <require from="../../../wwwroot/views/custom/resources/elements/custom-element/secret-message"></require>
+    <p>custom element</p>
+    <secret-message></secret-message>
+
+    <!-- binding with cusotm elements view-->
+    <require from="../../../wwwroot/views/custom/resources/elements/custom-element/bind-message"></require>
+
+    <h2>bindable properties</h2>
+    <p>
+        Secret Message: <input type="text" value.bind="message" />
+    </p>
+    <p>
+        Allow Message to Destruct? <input type="checkbox" checked.bind="allowDestruction" />
+    </p>
+    <bind-message message.bind="message" allow-destruction.bind="allowDestruction"></bind-message>
+
+    <!-- add attributes, event handlers, and bindings on the template element -->
+
+    <h2>surrogate behavior</h2>
+    <require from="../../../wwwroot/views/custom/resources/elements/custom-element/my-button.html"></require>
+    <my-button></my-button>
+</template>
