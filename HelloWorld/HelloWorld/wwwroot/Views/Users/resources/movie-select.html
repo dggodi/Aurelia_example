@@ -1,0 +1,9 @@
+﻿<template>
+    <div>
+        <label for="moive">movies</label>
+        <select id="movie" value.bind="selectedMovies" multiple>
+            <option model.bind="null">Select Movie</option>
+            <option repeat.for="movie of movies" model.bind="movie">${movie.title} | ${movie.releaseYear}</option>
+        </select>
+    </div>
+</template>

@@ -1,0 +1,20 @@
+﻿<template>
+     
+    <div class="container">
+        <table class="table">
+            <tr>
+                <th>DowId</th>
+                <th>First</th>
+                <th>Last</th>
+            </tr>
+            <tr repeat.for="user of users">
+                <td>${user.Id}</td>
+                <td>${user.First}</td>
+                <td>${user.Last}</td> 
+            </tr>
+        </table>
+    </div>
+
+    <!--<require from ="./resources/movie-select"></require>
+    <movie-select></movie-select>-->
+</template>

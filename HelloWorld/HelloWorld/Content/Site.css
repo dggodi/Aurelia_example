@@ -22,3 +22,15 @@ select,
 textarea {
     max-width: 280px;
 }
+
+#authors-modal {
+    background-color: white;
+    position:fixed;
+    top:20%;
+    left:20%;
+    width: 600px;
+    padding: 20px;
+    height:400px
+}
+
+#authors-modal ul {list-style-type:none}

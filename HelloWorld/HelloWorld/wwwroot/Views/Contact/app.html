@@ -1,0 +1,16 @@
+﻿<template>
+    <require from="./resources/elements/nav-bar"></require>
+    <require from ="./resources/elements/contact-list"></require>
+
+    <nav-bar router.bind="router"></nav-bar>
+    <loading-indicator loading.bind="router.isNavigating || api.isRequesting"></loading-indicator>
+
+    <div class="container">
+        <div class="row">
+            <contact-list class="col-md-4"></contact-list>
+
+            <!--tells aurelia were to reder the route-->
+            <router-view class="col-md-8"></router-view>
+        </div>
+    </div>
+</template>

@@ -1,5 +1,5 @@
 ﻿//import {inject} from "aurelia-framework";
-import {MovieData} from "./movieData";
+import {MovieData} from "../../DataHandlers/movieData";
 
 //@inject(MovieData)
 export class List {

@@ -1,0 +1,15 @@
+﻿
+    <template>
+        <div id="authors-modal">
+            <ai-dialog>
+                <ai-dialog-body>
+                    <require from="../elements/users"></require>
+                    <users></users>
+                </ai-dialog-body>
+                <ai-dialog-footer>
+                    <button click.trigger="controller.cancel()">Cancel</button>
+                    <button click.trigger="controller.ok(message)">Finish</button>
+                </ai-dialog-footer>
+            </ai-dialog>
+        </div>
+    </template>

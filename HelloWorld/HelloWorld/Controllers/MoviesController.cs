@@ -1,4 +1,5 @@
-﻿using Movies5.Model;
+﻿using HelloWorld.Models;
+using Movies5.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace HelloWorld.Controllers
 {
     public class MoviesController : Controller
     {
+        MovieContext db = new MovieContext();
+
         static List<Movie> _movie = new List<Movie>
         {
             new Movie
@@ -29,19 +32,9 @@ namespace HelloWorld.Controllers
 
         public ActionResult Index()
         {
-            var m = (from r in _movie select r).ToList();
+            //var m = (from r in _movie select r).ToList();
+            var m = db.movies.ToList();
             return Json(m, JsonRequestBehavior.AllowGet); 
         }
-        //    GET: Movies
-        //   [Route("api/[controller]")]
-        //    public ActionResult Index()
-        //    {
-        //        List<Movie> movie = new List<Movie>();
-        //        Movie movie = new Movie { Id = 1, Title = "Lord of the Rings", ReleaseYear = 2002 };
-        //        movie.Add(new Movie { Id = 2, Title = "The two towers", ReleaseYear = 2004 });
-        //        var model = from r in movie select r;
-        //        var model = Newtonsoft.Json.JsonConvert.SerializeObject(movie);
-        //        return View(movie);
-        //    }
     }
 }

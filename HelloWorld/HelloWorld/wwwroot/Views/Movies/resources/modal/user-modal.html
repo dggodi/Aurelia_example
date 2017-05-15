@@ -1,0 +1,20 @@
+﻿
+    <template>
+        <p style="height:200px"></p>
+        <section id="authors-modal">
+           
+            <div>
+                <ai-dialog>
+                    <ai-dialog-body>
+                        <require from="../elements/users"></require>
+                        <users></users>
+                        asdsad
+                    </ai-dialog-body>
+                    <ai-dialog-footer>
+                        <button click.trigger="controller.cancel()">Cancel</button>
+                        <button click.trigger="controller.ok(message)">Finish</button>
+                    </ai-dialog-footer>
+                </ai-dialog>
+            </div>
+        </section>
+    </template>

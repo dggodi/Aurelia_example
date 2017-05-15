@@ -9,7 +9,9 @@ export function configure(aurelia) {
 
     aurelia.use
         .standardConfiguration()  // contains standard configuration settigns
-        .developmentLogging();
+        .developmentLogging()
+        .plugin("aurelia-dialog")
+        .plugin("aurelia-validation");
 
     // .globalResources('')  location of global resources
     // .plugins('')          global custom elements

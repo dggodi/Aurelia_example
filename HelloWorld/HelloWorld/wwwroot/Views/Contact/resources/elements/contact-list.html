@@ -1,0 +1,17 @@
+﻿<template>
+    <div class="contact-list">
+        <ul class="list-group">
+            <!-- 
+                add an active class if the contact's id is the same as the selectedId of the contact on our ContactList view-model 
+                $parent reaches outside of the list's scope and into the parent view-model so we can test against that property
+            -->
+            <li repeat.for="contact of contacts" class="list-group-item ${contact.id === $parent.selectedId ? 'active' : ''}">
+                <!-- route-href - genertes a href for a route which is refrenced in app.js -->
+                <a route-href="route: contacts; params.bind: {id:contact.id}" click.delegate="$parent.select(contact)">
+                    <h4 class="list-group-item-heading">${contact.firstName} ${contact.lastName}</h4>
+                    <p class="list-group-item-text">${contact.email}</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+</template>

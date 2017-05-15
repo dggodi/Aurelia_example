@@ -1,3 +1,3 @@
 export class Hi{
-    message = "Hi";
+    message = "Hi from home";
 }
