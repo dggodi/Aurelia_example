@@ -1,0 +1,14 @@
+﻿<!--<template bindable="selectedAuthors">-->
+<template>
+        <ai-dialog id="authors-modal">
+            <ai-dialog-header>${heading}</ai-dialog-header>
+            <ai-dialog-body>
+                <require from="../elements/select-reviewer"></require>
+                <select-reviewer></select-reviewer> 
+            </ai-dialog-body>
+            <ai-dialog-footer>
+                <button click.delegate="controller.cancel()">Cancel</button>
+                <button click.delegate="controller.ok(rating)">Ok</button>
+            </ai-dialog-footer>
+        </ai-dialog>
+</template>

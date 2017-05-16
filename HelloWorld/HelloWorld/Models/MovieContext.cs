@@ -13,6 +13,7 @@ namespace HelloWorld.Models
 
         public DbSet<Movie> movies { get; set; }
         public DbSet<Users> users { get; set; }
+        public DbSet<FinalReviewers> FinalReviewers { get; set; }
     }
 
     

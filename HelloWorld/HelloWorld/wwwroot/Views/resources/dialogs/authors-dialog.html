@@ -1,0 +1,20 @@
+﻿<!--<template bindable="selectedAuthors">-->
+<template>
+        <ai-dialog id="authors-modal">
+            <ai-dialog-header>${heading}</ai-dialog-header>
+            <ai-dialog-body>
+                <require from="../elements/select-authors"></require>
+                <select-authors selectedAuthors.two-way="selectedAuthors"></select-authors>
+
+                <div class="form-group col-sm-12">
+                    <ul>
+                        <li repeat.for="author of selectedAuthors">${author.First} - ${author.DowId}</li>
+                    </ul>
+                </div>
+            </ai-dialog-body>
+            <ai-dialog-footer>
+                <button click.delegate="controller.cancel()">Cancel</button>
+                <button click.delegate="controller.ok(rating)">Ok</button>
+            </ai-dialog-footer>
+        </ai-dialog>
+</template>
