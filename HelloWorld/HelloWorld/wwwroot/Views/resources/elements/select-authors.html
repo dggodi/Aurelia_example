@@ -12,7 +12,7 @@
             <div class="col-sm-10">
                 <select class="col-xs-12" size="10" multiple>
                     <option model.bind="null"></option>
-                    <option repeat.for="author of authors" model.bind="author & throttle:250" click.trigger="add(author)">
+                    <option repeat.for="author of authors" model.bind="author" click.trigger="add(author)">
                         ${author.Last}, ${author.First} (${author.DowId})
                     </option>
                 </select>

@@ -19,7 +19,6 @@ export class BusinessCapabilities {
                 } else {
                     console.log('Cancel');
                 }
-                console.log(response.output);
             });
     }
 }

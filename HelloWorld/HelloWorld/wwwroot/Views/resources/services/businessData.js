@@ -22,6 +22,7 @@ export class BusinessData {
     }
 
     getReviewers(text) {
+        console.log("BusinessData  :: getReviewers");
         return this.http.get(`${baseUrl}/Search/${text}`)
             .then(response => {
                 return response.content;

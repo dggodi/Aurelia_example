@@ -10,6 +10,6 @@ namespace HelloWorld.Models
         public int Id { get; set; }
         public string DowId { get; set; }
         public string BusinessCapability { get; set; }
-        public DateTime LastUpdated { get; set; }
+        public int LastUpdated { get; set; }
     }
 }

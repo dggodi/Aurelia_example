@@ -24,5 +24,12 @@ namespace HelloWorld.Controllers
             var m = db.users.Where(r => r.Last.StartsWith(text));
             return Json(m, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public ActionResult SearchById(string id)
+        {
+            var m = db.users.Where(r => r.DowId ==id);
+            return Json(m, JsonRequestBehavior.AllowGet);
+        }
     }
 }

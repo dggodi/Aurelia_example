@@ -1,14 +1,16 @@
 ﻿//import { bindable, bindingMode } from 'aurelia-framework';
 import { inject } from "aurelia-framework";
 import { BusinessData } from "../services/businessData";
+import { UserData } from "../services/userData";
 
-@inject(BusinessData)
+@inject(BusinessData, UserData)
 export class SelectReviewer {
     businessCapabilites = []
-    selectedBusiness = null;
-
-    constructor(data) {
+    selectedBusinessCapability = null;
+    finalReviewers = [];
+    constructor(data, userData) {
         this.data = data;
+        this.userData = userData;
     }
 
     created() {
@@ -17,6 +19,26 @@ export class SelectReviewer {
             .then(businessCapabilites => this.businessCapabilites = businessCapabilites)
             .catch(error => {
                 alert("----- error getting business data -------------");
+            });
+    }
+
+    add(obj) {
+        console.log("SelectReviewer :: add" + obj.DowId);
+        let s = obj.DowId
+        this.userData.searchById(s)
+            .then(finalReviewers => this.finalReviewers = finalReviewers)
+            .catch(error => {
+                alert("----- error getting final reviwer data -------------");
+            });
+        //this.finalReviewers.push(obj);
+    }
+
+    onChange() {
+        console.log("Select Business  :: onChange" + this.selectedBusinessCapability);
+        return this.businessData.getReviewers(this.selectedBusinessCapability)
+            .then(finalReviewers => this.finalReviewers = finalReviewers)
+            .catch(error => {
+                alert("----- error getting final reviwer data -------------");
             });
     }
 
