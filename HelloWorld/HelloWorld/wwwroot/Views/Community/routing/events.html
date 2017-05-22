@@ -1,0 +1,8 @@
+<template>
+    events
+    <div repeat.for="event of events">
+
+		<!--  model.bind - references the object passed into viewmodel -->
+        <compose model.bind="event" view="./event.html"></compose>
+	</div>
+</template>

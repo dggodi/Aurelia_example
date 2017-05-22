@@ -1,3 +1,6 @@
-﻿<template>
-    <button click.delegate="getAuthors()">Click</button>
+﻿<template bindable="data">
+    
+    <input type="text" placeholder="Dow ID" class="form-control" value.bind="data.DowId" />
+    <button click.delegate="getAuthors(data)">Click</button>
+    
 </template>

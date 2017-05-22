@@ -1,5 +1,18 @@
-﻿//import { bindable, bindingMode } from 'aurelia-framework';
+﻿import { bindable, bindingMode } from 'aurelia-framework';
+
+//var data = [{ "DowId": "nd20849", "cancel": true }]
+
 
 export class SubmissionForm {
-    //@bindable({ defaultBindingMode: bindingMode.twoWay }) selectedAuthors = [];
+    //DowId;
+    @bindable({ defaultBindingMode: bindingMode.twoWay }) data;
+
+    constructor() {
+        //this.DowId = '';
+        this.data = {"DowId": "nd20849"};
+    }
+
+    //getData() {
+    //    return data;
+    //}
 }

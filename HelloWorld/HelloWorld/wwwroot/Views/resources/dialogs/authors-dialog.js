@@ -4,10 +4,23 @@ import { DialogController } from 'aurelia-dialog';
 @inject(DialogController)
 export class AuthorsDialog {
 
-    heading = 'Search for Author';
+    original;
 
-    constructor(controller) {
-        this.controller = controller;
+    constructor(dialogController) {
+        this.dialogController = dialogController;
     }
 
+    activate(data) {
+        this.data = data;
+        this.original = data;
+    }
+
+    save() {
+        this.dialogController.ok();
+    }
+
+    cancel() {
+        this.data = {}
+        this.dialogController.cancel()
+    }
 }

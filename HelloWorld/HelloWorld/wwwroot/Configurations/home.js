@@ -10,7 +10,12 @@ export function configure(aurelia) {
     aurelia.use
         .standardConfiguration()  // contains standard configuration settigns
         .developmentLogging()
-        .plugin("aurelia-dialog")
+        .plugin('aurelia-dialog', (settings) => {
+            settings.useDefaults();
+            settings.lock = true;
+            settings.centerHorizontalOnly = true;
+            settings.startingZIndex = 5;
+        })
         .plugin("aurelia-validation");
 
     // .globalResources('')  location of global resources
@@ -18,5 +23,5 @@ export function configure(aurelia) {
 
     // returns a promise if the aurelia app is created succesfully
     // setRoot tells aurelia what files to load, app.js by defualt
-    aurelia.start().then(a => a.setRoot('/wwwroot/views/app', document.body));
+    aurelia.start().then(a => a.setRoot('/wwwroot/views/app'));
 };

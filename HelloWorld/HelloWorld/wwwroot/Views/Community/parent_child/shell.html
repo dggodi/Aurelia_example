@@ -1,0 +1,14 @@
+﻿<template>
+    <!-- pull in contents fromn a module that been loaded -->
+    <require from="bootstrap/css/bootstrap.css"></require>
+
+    <div class='container-fluid'>
+        <div class='col-xs-10'>
+         <!-- renders astructure onto the screen with its parents view model -->
+            <compose view='./events.html' view-model='./events'></compose>
+        </div>
+        <div class="col-xs-2">
+            <compose view-model="./sponsors"></compose>
+        </div>
+    </div>
+</template>

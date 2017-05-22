@@ -1,12 +1,13 @@
 ﻿<template>
     <require from = "../resources/elements/authors"></require>
-    <authors></authors>
+    <authors model.bind="data"></authors>
+    <p>id info: ${data.DowId}</p>
 
-    <require from="../resources/elements/business-capabilities"></require>
+    <!--<require from="../resources/elements/business-capabilities"></require>
     <business-capabilities></business-capabilities>
 
     <div repeat.for="event of events">
     <compose model.bind="event" view="events/event.html"></compose>
     </div>
-    
+    -->
 </template>

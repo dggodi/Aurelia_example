@@ -1,0 +1,14 @@
+﻿<template>
+    <require from="./resources/elements/header/nav-bar"></require>
+    <nav-bar router.bind="router"></nav-bar>
+
+    <!--container that holds a view from a route-->
+    <div class='container'>
+        <div class='col-xs-10'>
+            <router-view name='mainContent'></router-view>
+        </div>
+        <div class="col-xs-2">
+            <router-view name='sideBar'></router-view>
+        </div>
+    </div>
+</template>
