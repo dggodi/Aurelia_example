@@ -1,0 +1,13 @@
+﻿<template>
+    <div>
+        <label class="col-sm-2 control-label">Business / Capabilites</label>
+        <div class="col-sm-4">
+            <select class="col-sm-12" value.bind="selectedBusinessCapabilities" multiple >
+                <option repeat.for="businessCapability of businessCapabilities" value.bind="businessCapability">
+                    ${businessCapability}
+                </option>
+            </select>
+        </div>
+        <div class="col-sm-1"><button type="button" class="btn btn-primary btn-block" click.trigger="openModal()">+</button></div>
+    </div>
+</template>

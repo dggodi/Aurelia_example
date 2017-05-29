@@ -23,5 +23,5 @@ export function configure(aurelia) {
 
     // returns a promise if the aurelia app is created succesfully
     // setRoot tells aurelia what files to load, app.js by defualt
-    aurelia.start().then(a => a.setRoot('/wwwroot/views/app'));
+    aurelia.start().then(a => a.setRoot('/wwwroot/views/Home/app'));
 };

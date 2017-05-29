@@ -1,0 +1,15 @@
+﻿<template> 
+    <div class="form-group col-sm-12" id="user-space">
+        <label class="col-sm-2 control-label">Authors:</label>
+        <div id="hideoverflow" class="col-sm-5">
+            <select class="col-xs-12" size="5" disabled>
+                <option model.bind="null"></option>
+                <option repeat.for="author of parent.authors" model.bind="author">
+                    ${author.LastName}, ${author.FirstName} - ${author.DowId}
+                </option>
+            </select>
+        </div>
+        <div class="col-sm-1"><button type="button" class="btn btn-primary btn-block" click.trigger="openModal(parent.authors)">+</button></div>
+        <div class="col-sm-4 has-error">Names do not matched from AD Service</div>
+    </div>
+</template>

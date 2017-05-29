@@ -21,7 +21,7 @@ namespace HelloWorld.Controllers
         [HttpGet]
         public ActionResult Search(string text)
         {
-            var m = db.users.Where(r => r.Last.StartsWith(text));
+            var m = db.users.Where(r => r.LastName.StartsWith(text));
             return Json(m, JsonRequestBehavior.AllowGet);
         }
 

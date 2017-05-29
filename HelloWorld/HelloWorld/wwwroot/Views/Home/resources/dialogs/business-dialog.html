@@ -1,0 +1,24 @@
+﻿<template>
+        <ai-dialog id="authors-modal">
+            <ai-dialog-header><h3>${heading}</h3></ai-dialog-header>
+            <ai-dialog-body>
+                
+                <div class="col-sm-12">
+                    <label class="col-sm-2 control-label">Final Reviewer</label>
+                    <div class="col-sm-10">
+                        <select class="col-xs-12" size="10" value.bind="selectedFinalReviewer">
+                            <option model.bind="null"></option>
+                            <option repeat.for="finalReviewer of finalReviewers" model.bind="finalReviewer">
+                                ${finalReviewer.LastName}, ${finalReviewer.FirstName} (${finalReviewer.DowId})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+ 
+            </ai-dialog-body>
+            <ai-dialog-footer>
+                <button click.delegate="cancel()">Cancel</button>
+                <button click.delegate="ok()">Ok</button>
+            </ai-dialog-footer>
+        </ai-dialog>
+</template>
