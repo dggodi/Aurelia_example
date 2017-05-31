@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/site.css">
+</head>
+
+<body>
+	<section class="container form-inline line-spacing">
+        <h3>
+        	<div class="form-group">
+            	<label for="reports">Submission Form</label>
+                <select class="form-control" id="reports" value.bind="selectedReport">
+                	<option model.bind="null">Choose A Report Type</option>
+                    <option repeat.for="reportSelection of reportSelections"model.bind="reportSelection">
+                    	${reportSelection.name}
+                    </option>
+                </select>
+            </div>
+        </h3>
+	</section>
+    
+    <br />
+    
+    <section class="container">
+  		 <div class="row">
+    		<div class="col-md-12 col-sm-12 col-xs-12">
+      			<div class="panel panel-default">
+        			<div class="panel-heading clearfix  line-spacing">
+          				<h3 class="panel-title">Title</h3>
+        			</div>
+        
+        			<div class="panel-body">
+                        <div class="row">
+                            <p class="col-sm-12"><label><span class="error">*</span> Indicates required field</label></p>
+                            
+                            <div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Business / Capabilites<span class="error">*</span></span> 
+                                    <select class="form-control" id="busineses" size = "1" value.bind="selectedBusinessCapabilities" multiple>
+                                        <option model.bind="null">Choose A Report Type</option>
+                                        <option repeat.for="businessCapability of businessCapabilities" value.bind="businessCapability">
+                                            ${businessCapability}
+                                        </option>
+                                    </select> 
+                                </div>
+                            </div>
+                
+                            <div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Final Reviewer<span class="error">*</span></span>
+                                    <input class="form-control" id="reviewer" value.bind="finalReviewer" readonly />
+                                </div>
+                            </div>
+    
+                    	</div>
+                        
+                        <div class="row">
+                        	<div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                	<!--<require from="./resources/elements/retrieve-eln-projects"></require>
+                                    <retrieve-eln-projects></retrieve-eln-projects>-->
+                                    <span class="input-group-addon">ELN Project<span class="error">*</span></span>
+                                    <select class="form-control">
+                                        <option model.bind="null">Select ELN Project</option>
+                                    </select> 
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">DateBook Number</span>
+                                    <input class="form-control" name="ELN_project" placeholder="Enter #" value=""/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                        	<div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Report Number<span class="error">*</span></span>
+                                    <input class="form-control" name="report_number" placeholder="Enter #" value=""/> 
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="simple-checkbox">
+                                    <input type="checkbox">  Limited Distribution
+                                </div>
+                            </div>
+                        </div>
+                        
+        			</div><!-- end panel-body -->
+      			</div>
+    		</div>
+  		</div>    
+ 	</section>
+  
+  
+    <section class="container">
+  		 <div class="row">
+    		<div class="col-md-12 col-sm-12 col-xs-12">
+      			<div class="panel panel-default">
+        			<div class="panel-heading clearfix  line-spacing">
+          				<h3 class="panel-title">Title</h3>
+        			</div>
+        
+        			<div class="panel-body">
+                        
+                        
+        			</div><!-- end panel-body -->
+                    
+      			</div>
+    		</div>
+  		</div>    
+ 	</section>
+    
+    <section class="container">
+  		 <div class="row">
+    		<div class="col-md-12 col-sm-12 col-xs-12">
+      			<div class="panel panel-default">
+        			<div class="panel-heading clearfix  line-spacing">
+          				<h3 class="panel-title">Title</h3>
+        			</div>
+        
+        			<div class="panel-body">
+                        
+                        
+        			</div><!-- end panel-body -->
+                    
+      			</div>
+    		</div>
+  		</div>    
+ 	</section>
+</body>
+</html>
+
+
+
+.error {padding: 10px; color:red}
+
+.line-spacing {margin-bottom:20px}
+
+.line-spacing div input[type=text] {width:200px}
+
+.line-spacing div select {width:200px}
+
+.simple-checkbox {margin:7px 0px 0px 0px}
