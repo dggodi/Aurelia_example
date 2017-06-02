@@ -1,0 +1,25 @@
+﻿<template>
+    <require from="./custom-select"></require>
+
+    <h1>Standard Select</h1>
+    <select multiple value.bind="selectedThing" style="width: 100%">
+        <option repeat.for="thing of things" model.bind="thing">${thing.name}</option>
+    </select>
+    <div repeat.for="author of selectedThing">
+        <div class="col-sm-8">
+            ${author.name}
+        </div>
+    </div>
+
+    <h1>Select2</h1>
+    <select select2 multiple value.bind="selectedThing2" style="width: 100%">
+        <option repeat.for="thing of things" model.bind="thing">${thing.name}</option>
+    </select>
+
+    <div repeat.for="author of selectedThing2">
+        <div class="col-sm-8">
+            ${author.name}
+        </div>
+    </div>
+
+</template>

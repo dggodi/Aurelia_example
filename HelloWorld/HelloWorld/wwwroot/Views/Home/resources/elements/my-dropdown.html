@@ -1,0 +1,13 @@
+﻿<template>
+
+    <require from="./keys-value-converter"></require>
+
+    <require from="./tostring-value-converter"></require>
+
+    <select class="form-control" value.bind="value | tostring & debounce:1000">
+
+        <option repeat.for="key of enumList | keys" model.bind="key">${key} - ${enumList[key]}</option>
+
+    </select>
+
+</template>

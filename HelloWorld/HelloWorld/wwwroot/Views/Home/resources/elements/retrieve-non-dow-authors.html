@@ -5,7 +5,7 @@
             <input type="text" placeholder="Smith, John" class="form-control" value.bind="name" />
         </div>
         <button type="button" class="col-sm-1 btn btn-primary" click.delegate="add()">+</button>
-        <div>${error}</div>
+        <div style.bind="errorStatus">${error}</div>
     </div>
 
     <div id="user-space">

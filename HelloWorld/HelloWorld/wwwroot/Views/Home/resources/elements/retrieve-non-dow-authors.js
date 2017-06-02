@@ -1,5 +1,6 @@
 ﻿import { inject, bindable, bindingMode } from 'aurelia-framework';
 import { HashSet } from "../services/hashset";
+import { NonDowAuthor } from "../models/person"
 
 /**
  * converts first character in each word to uppercase and returns the result
@@ -70,6 +71,8 @@ export class RetrieveNonDowAuthors {
      */
     constructor(set) {
         this.set = set;
+        this.errorStatus = { color: "red" };
+        this.nonDowAuthor = new NonDowAuthor();
     }
 
     /**
