@@ -32,12 +32,11 @@ export class RetrieveAuthors {
      *
      * note if the service fails clear the data being sent
      */
-    openModal(authors) {
-        var original = DataObjectUtility.cloneObject(authors);
+    openModal() {
         this.dialogService.open({ viewModel: AuthorDialog, model: this.parent })
             .then(response => {
                 if (response.wasCancelled) {
-                    this.parent.authors = original;
+                    this.parent.name = "";
                 }
             });
     }

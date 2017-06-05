@@ -1,31 +1,165 @@
 ﻿<template>
-    <div class="container-fluid">
-        <form class="form-horizontal form-tranparent">
-            <!--<require from="./resources/elements/retrieve-authors"></require>
-            <retrieve-authors authors.two-way="dowAuthors"></retrieve-authors> 
+    <section class="container form-inline line-spacing">
+        <div class="form-group">
+            <h3>
+                <label for="reports">Submission Form &nbsp;&nbsp;&nbsp;</label>
+                <select class="form-control" id="reports" value.bind="selectedReport">
+                    <option model.bind="null">Choose A Report Type</option>
+                    <option repeat.for="reportSelection of reportSelections" model.bind="reportSelection">
+                        ${reportSelection}
+                    </option>
+                </select>
+            </h3>
+        </div>
+    </section>
+    <section class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix  line-spacing">
+                        <h3 class="panel-title">General Information</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <p class="col-sm-12">
+                                <label><span class="error">*</span> Indicates required field</label>
+                            </p>
+                            <div class="col-lg-7 col-sm-12 line-spacing">
+                                <require from="./resources/elements/retrieve-businesses"></require>
+                                <retrieve-businesses reviewer.two-way="finalReviewer" loadingSpinner.two-way="loadingSpinner"></retrieve-businesses>
+                            </div>
+                            <div class="col-lg-5 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Final Reviewer<span class="error">*</span></span>
+                                    <input type="text" class="form-control" id="reviewer" value.bind="finalReviewer" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-7 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">ELN Project<span class="error">*</span></span>
+                                    <select class="form-control" >
+                                        <option model.bind="null">Select ELN Project</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">DateBook Number</span>
+                                    <input class="form-control" name="ELN_project" placeholder="Enter #" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-inline">
+                                <div class="col-lg-5 col-sm-12 form-group ">
+                                    <p>
+                                        <label>Export Control Status &nbsp; &nbsp;</label>
+                                        <input type="radio" name="exportControl" value="yes"><span> &nbsp;Yes &nbsp;</span>
+                                        <input type="radio" name="exportControl" value="no"><span> &nbsp;No &nbsp;</span>
+                                        <input type="radio" name="exportControl" value="Don't Know"><span> &nbsp;Don't Know &nbsp;</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
-            <require from="./resources/elements/retrieve-businesses"></require>
-            <retrieve-businesses reviewer.two-way="finalReviewer"></retrieve-businesses>
-
-            <div class="form-group col-sm-12" id="user-space">
-                <label class="col-sm-2 control-label">final reviewer</label>
-                <div class="col-sm-10">
-                    <input type="text" placeholder="Name" class="form-control" value.bind="finalReviewer" readonly/>
+                        <div class="row">
+                            <div class="col-lg-7 col-sm-12 line-spacing">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Report Number<span class="error">*</span></span>
+                                    <input class="form-control" name="report_number" placeholder="Enter #" value="" />
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-sm-12 line-spacing">
+                                <div class="simple-checkbox">
+                                    <input type="checkbox">  Limited Distribution
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end panel-body -->
                 </div>
             </div>
+        </div>
+    </section>
+    <section class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix  line-spacing">
+                        <h3 class="panel-title">Document Entry</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-5 col-sm-12 line-spacing">
+                                <div class="input-group-btn">
+                                    <div>
+                                        <a id="docxbtn" class="btn btn-primary">
+                                            Upload Word Doc
+                                            <input type="file" id="docx_file_upload" class="docxbtn" multiple
+                                                                                                     files="on-loaded.bind: docxFileCallback; read-as.bind: 'text'; file-filter.bind: 'vnd.openxmlformats-officedocument.wordprocessingml.document.*';" />
+                                        </a>
+                                        <a id="pdfbtn" class="btn btn-primary">
+                                            Upload PDF Doc
+                                            <input type="file" id="pdf_file_upload" class="pdfbtn" multiple
+                                                                                                     files="on-loaded.bind: pdfFileCallback; read-as.bind: 'text'; file-filter.bind: 'pdf.*';" />
+                                        </a>
+                                        <a id="supportingbtn" class="btn btn-primary">
+                                            Upload Supporting Documents
+                                            <input type="file" id="supporting_files_upload" class="supportingbtn" multiple
+                                                                                                     files="on-loaded.bind: multipleSupportingFilesLoadedCallback; file-filter.bind: 'text|image|doc|pdf|png|jpeg|gif|bmp|ppt|excel|vnd.openxmlformats-officedocument.wordprocessingml.document.*';" />
+                                        </a>
+                                    </div>
+                                    <div class="input-group-btn">
+                                        <ul class="dropdown-menu pull-right">
+                                            <li repeat.for="report of reports">sdfsd ${report}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div><!-- col -->
+                            <div class="col-lg-7 col-sm-12 line-spacing">
+                                <div class="input-group-btn">
+                                    <div id="upload-space">
+                                        <button type="button" class="btn btn-default dropdown-toggle" style="width:100%"
+                                                                                               data-toggle="dropdown">
+                                            Documents Uploaded
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="#">Action</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- end row -->
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="col-lg-5 col-sm-12  ">
+                                    <div class="input-group lg-line-seperation">
+                                        <span class="input-group-addon">Title<span class="error">*</span></span>
+                                        <input class="form-control" name="title" placeholder="Enter Title" value="" />
+                                    </div>
 
-            <require from="./resources/elements/retrieve-non-dow-authors"></require>
-            <retrieve-non-dow-authors authors.two-way="nonDowAuthors"></retrieve-non-dow-authors>
--->
-            <div class="form-group col-sm-12" id="user-space">
-                <require from="./resources/elements/welcome"></require>
-                <welcome></welcome>
+                                    <div class="lg-line-seperation">
+                                        <require from="./resources/elements/retrieve-authors"></require>
+                                        <retrieve-authors authors.bind="dowAuthors"></retrieve-authors>
+                                    </div>
+                                    <require from="./resources/elements/retrieve-non-dow-authors"></require>
+                                    <retrieve-non-dow-authors authors.bind="nonDowAuthors"></retrieve-non-dow-authors>
+                                </div>
+
+                                <div class="col-lg-7 col-sm-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Abstract<span class="error">*</span></span>
+                                        <textarea class="form-control" name="ELN_project" rows=15 placeholder="" value=""></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end row -->
+                </div><!-- end panel -->
             </div>
-                
-
-</form>
-    </div>
-
-    
-
+        </div>
+    </section>
 </template>

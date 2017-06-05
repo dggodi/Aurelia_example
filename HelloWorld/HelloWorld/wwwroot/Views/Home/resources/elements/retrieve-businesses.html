@@ -1,13 +1,17 @@
-﻿<template>
-    <div>
-        <label class="col-sm-2 control-label">Business / Capabilites</label>
-        <div class="col-sm-4">
-            <select class="col-sm-12" value.bind="selectedBusinessCapabilities" multiple >
-                <option repeat.for="businessCapability of businessCapabilities" value.bind="businessCapability">
-                    ${businessCapability}
-                </option>
-            </select>
-        </div>
-        <div class="col-sm-1"><button type="button" class="btn btn-primary btn-block" click.trigger="openModal()">+</button></div>
+﻿<template bindable="finalReviewer">
+    <div class="input-group">
+        <span class="input-group-addon">Business / Capabilites
+            <span class="error">*</span>
+            <i class='fa fa-spin fa-spinner' style='margin: 0 auto' if.bind="loadingSpinner"></i>
+        </span>
+        <select multiple class="form-control" value.bind="selectedBusinessCapabilities" style="width: 100%">
+            <option repeat.for="businessCapability of businessCapabilities" value.bind="businessCapability">
+                ${businessCapability}
+            </option>
+        </select>
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-primary btn-block"  click.trigger="openModal()">Add Final Reviewer</button>
+        </span>
     </div>
+    
 </template>

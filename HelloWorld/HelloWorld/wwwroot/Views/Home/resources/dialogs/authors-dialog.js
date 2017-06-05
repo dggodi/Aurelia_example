@@ -45,6 +45,7 @@ export class AuthorDialog {
         this.controller = controller;
         this.userData = userData;
         this.set = set;
+        this.loadingSpinner = false;
         controller.settings.centerHorizontalOnly = true;
     }
 
@@ -54,6 +55,14 @@ export class AuthorDialog {
      */
     activate(data) {
         this.data = data;
+        this.name = data.name;
+        
+        if (this.name != null){
+            if (this.name.length >= 3) {
+                this.loadingSpinner = true;
+                this.search(this.name);
+            }
+        }
     }
 
     /**
@@ -76,9 +85,9 @@ export class AuthorDialog {
      * @param author - author object added to array
      */
     add(obj) {
-        if (this.set.contains(this.selectedAuthor[0].DowId) === false) {
-            this.finalAuthors.push(this.selectedAuthor[0]);
-            this.set.add(this.selectedAuthor[0].DowId)
+        if (this.set.contains(obj.DowId) === false) {
+            this.finalAuthors.push(obj);
+            this.set.add(obj.DowId)
         }
     }
 
@@ -103,7 +112,8 @@ export class AuthorDialog {
      */
     nameChanged(newValue) {
         if (newValue.length >= 3) {
-            this.search();
+            this.loadingSpinner = true;
+            this.search(this.name);
         }
     }
     
@@ -133,11 +143,21 @@ export class AuthorDialog {
     /**
      * if successful retrieve user data from the userData Service
      */
-    search() {
-        this.userData.search(this.name)
-            .then(authors => this.authors = authors)
+    search(name) {
+        this.userData.search(name)
+            .then(authors => {
+                var result = authors;
+                if (result === false)
+                    alert("timout");
+                else
+                    this.authors = authors;
+
+                this.loadingSpinner = false;
+            })
             .catch(error => {
                 console.log("----- error getting user info -------------");
+                this.loadingSpinner = false;
             });
+        console.log(this.authors);
     }
 }

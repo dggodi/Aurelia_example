@@ -1,15 +1,15 @@
 ﻿<template> 
-    <div class="form-group col-sm-12" id="user-space">
-        <label class="col-sm-2 control-label">Authors:</label>
-        <div id="hideoverflow" class="col-sm-5">
-            <select class="col-xs-12" size="5" disabled>
-                <option model.bind="null"></option>
-                <option repeat.for="author of parent.authors" model.bind="author">
-                    ${author.LastName}, ${author.FirstName} - ${author.DowId}
-                </option>
-            </select>
+    <div class="input-group user-space">
+        <span class="input-group-addon">Dow Authors<span class="error">*</span></span>
+        <input type="text" placeholder="Smith, John" class="form-control" value.bind="name" />
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-primary btn-block"  click.trigger="openModal()">Add Final Reviewer</button>
+        </span>
+    </div>
+    <div id="user-space">
+        <div repeat.for="author of authors" >
+            ${author.LastName}, ${author.FirstName} - ${author.DowId}
+            <button type="button" class="btn btn-primary btn-group-xs pull-right" click.delegate="remove(author)">-</button>
         </div>
-        <div class="col-sm-1"><button type="button" class="btn btn-primary btn-block" click.trigger="openModal(parent.authors)">+</button></div>
-        <div class="col-sm-4 has-error">Names do not matched from AD Service</div>
     </div>
 </template>

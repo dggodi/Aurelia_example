@@ -17,7 +17,7 @@ export class CustomSelect {
     }
 
     detached() {
-        $(this.element).select2('destroy');
+        $(this.element).prop("disabled", true).select2();
     }
 
 }

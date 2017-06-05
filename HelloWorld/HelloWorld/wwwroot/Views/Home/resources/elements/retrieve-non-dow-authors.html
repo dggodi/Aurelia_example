@@ -1,21 +1,18 @@
 ﻿<template>
-    <div class="form-group" id="user-space">
-        <label class="col-sm-2 control-label">Name</label>
-        <div class="col-sm-4">
-            <input type="text" placeholder="Smith, John" class="form-control" value.bind="name" />
-        </div>
-        <button type="button" class="col-sm-1 btn btn-primary" click.delegate="add()">+</button>
-        <div style.bind="errorStatus">${error}</div>
+    <div class="input-group">
+        <span class="input-group-addon">Non Dow Authors<span class="error">*</span></span>
+        <input type="text" placeholder="Smith, John" class="form-control" value.bind="name" />
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-primary btn-block"  click.trigger="add()">Add</button>
+        </span>
     </div>
-
     <div id="user-space">
-        <div><h3>Non Dow Authors</h3></div>
         <div repeat.for="author of finalAuthors">
             <div class="col-sm-8">
                 ${author}
             </div>
             <div class="col-sm-4">
-                <button type="button" class="btn btn-primary" click.delegate="remove(author)">-</button>
+                <button type="button" class="btn btn-primary btn-group-xs pull-right" click.delegate="remove(author)">-</button>
             </div>
         </div>
     </div>

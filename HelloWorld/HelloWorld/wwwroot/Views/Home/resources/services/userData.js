@@ -2,44 +2,58 @@
 import { HttpClient } from "aurelia-http-client";
 
 let baseUrl = "Users";
+let timeout = 200;
 
 @inject(HttpClient)
 export class UserData {
     http;
+
     constructor(httpClient) {
         this.http = httpClient;
     }
-    //static inject() { return [HttpClient] }
+
     search(text) {
-        console.log("UserData :: search");
-        return this.http.get(`${baseUrl}/Search/${text}`)
-            .then(response => {
-                return response.content;
-            })
-            .catch(error => {
-                alert("----- error getting user from server -------------");
-            });
+        return new Promise(resolve => {
+            setTimeout(() => {
+                let found = this.http.get(`${baseUrl}/Search/${text}`)
+                    .then(response => {
+                        return response.content;
+                    })
+                    .catch(error => {
+                        alert("----- error getting user from server -------------");
+                    });
+                resolve(found);
+            }, timeout);
+        });
     }
 
     searchById(id) {
-        console.log("UserData :: searchById");
-        return this.http.get(`${baseUrl}/SearchById/${id}`)
-            .then(response => {
-                return response.content;
-            })
-            .catch(error => {
-                alert("----- error getting user from server -------------");
-            });
+        return new Promise(resolve => {
+            setTimeout(() => {
+                let found = this.http.get(`${baseUrl}/SearchById/${id}`)
+                    .then(response => {
+                        return response.content;
+                    })
+                    .catch(error => {
+                        alert("----- error getting user from server -------------");
+                    });
+                resolve(found);
+            }, timeout);
+        });
     }
 
     getAll() {
-        alert("UserData :: getAll");
-        return this.http.get(baseUrl)
-            .then(response => {
-                return response.content;
-            })
-            .catch(error => {
-                alert("----- error getting users -------------");
-            });
+        return new Promise(resolve => {
+            setTimeout(() => {
+                let found = this.http.get(`${baseUrl}`)
+                    .then(response => {
+                        return response.content;
+                    })
+                    .catch(error => {
+                        alert("----- error getting user from server -------------");
+                    });
+                resolve(found);
+            }, timeout);
+        });
     }
 }

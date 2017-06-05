@@ -2,65 +2,114 @@
 import { HttpClient } from "aurelia-http-client";
 
 let baseUrl = "Reviewer";
+let timeout = 200;
 
 @inject(HttpClient)
 export class FinalReviewerData {
     http;
+
     constructor(httpClient) {
         this.http = httpClient;
     }
 
     getAll() {
-        console.log("getAll");
-        return this.http.get(baseUrl)
-            .then(response => {
-                console.log(response.content);
-                return response.content;
-            })
-            .catch(error => {
-                alert("----- error getting businesses -------------");
-            });
+        return new Promise(resolve => {
+            setTimeout(() => {
+                let found = this.http.get(baseUrl)
+                    .then(response => {
+                        return response.content;
+                    })
+                    .catch(error => {
+                        console.log("----- error getting reviewers -------------");
+                    });
+                resolve(found);
+            }, timeout);
+        });
     }
 
     getReviewers(text) {
-        console.log("BusinessData  :: getReviewers");
-        return this.http.get(`${baseUrl}/Search/${text}`)
-            .then(response => {
-                return response.content;
-            })
-            .catch(error => {
-                alert("----- error getting reviewers -------------");
-            });
+        return new Promise(resolve => {
+            setTimeout(() => {
+                let found = this.http.get(`${baseUrl}/Search/${id}`)
+                    .then(response => {
+                        return response.content;
+                    })
+                    .catch(error => {
+                        console.log("----- error getting reviewers -------------");
+                    });
+                resolve(found);
+            }, timeout);
+        });
     }
 
-    getByBusiness(text) {
-        //text = "hi";
-        console.log("FinalReviewerData :: GetByBusiness - " + text);
-        //text = encodeURIComponent(JSON.stringify(text));
-         //text = URLEncode(text);
-        //JSON.stringify(text);
-
-
-        //text = encodeURIComponent(text);
-        text = URLEncode(text);
-        return this.http.get(`${baseUrl}/Search/${text}`)
-            .then(response => {
-                console.log(response.content);
+    getByBusiness(obj) {
+        return this.http.createRequest(`${baseUrl}/Search`)
+            .asPost()
+            .withHeader('Content-Type', 'application/json; charset=utf-8')
+            .withContent({ BusinessCapability: obj })
+            .send()
+            .then(response => {           
+                console.log(response.response);
                 return response.content;
-            })
-            .catch(error => {
-                console.log("----- error getting reviewers -------------");
+            }).catch(err => {
+                console.log(err);
             });
+
+
+        //return new Promise(resolve => {
+        //    setTimeout(() => {
+        //        var text = { json: JSON.stringify(obj) };
+
+        //        let found = this.http.get(`${baseUrl}/Search/${text}`)
+        //            .then(response => {
+        //                return response.content;
+        //            })
+        //            .catch(error => {
+        //                console.log("----- error getting reviewers -------------");
+        //            });
+        //        resolve(found);
+
+        //    }, timeout);
+        //});
+
+
+        //return new Promise(resolve => {
+        //    setTimeout(() => {
+        //        var request = this.http.createRequest();
+        //        var obj = { BusinessCapability: obj };
+        //        request.asPut()
+        //            .withUrl(`${baseUrl}/Search/`)
+        //            .withHeader("Accept", "application/json")
+        //            .withHeader("Content-Type", "application/json")
+        //            .withContent(JSON.stringify(obj));
+
+        //        let found = request.send()
+        //            .then(response => {
+        //                return response.content
+        //            })
+        //            .catch(error => {
+        //                console.log("----- error getting reviewers -------------");
+        //            });
+
+        //        resolve(found);
+
+        //    }, timeout);
+        //});
+
+        //return new Promise(resolve => {
+        //    setTimeout(() => {
+        //        text = URLEncode(text)
+        //        let found = this.http.get(`${baseUrl}/Search/${text}`)
+        //            .then(response => {
+        //                return response.content;
+        //            })
+        //            .catch(error => {
+        //                console.log("----- error getting reviewers -------------");
+        //            });
+        //        resolve(found);
+        //    }, timeout);
+        //});
     }
-
-    //URLEncode(data) {
-    //    var strdata = "" + data;
-
-    //    if (/&/.test(strdata) === true)
-    //        strdata = strdata.replace(/&/, "and");
-
-    //    return strdata;
-    //}
 }
 
 function URLEncode(data) {
