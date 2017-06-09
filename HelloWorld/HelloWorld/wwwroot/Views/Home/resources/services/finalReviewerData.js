@@ -54,61 +54,6 @@ export class FinalReviewerData {
             }).catch(err => {
                 console.log(err);
             });
-
-
-        //return new Promise(resolve => {
-        //    setTimeout(() => {
-        //        var text = { json: JSON.stringify(obj) };
-
-        //        let found = this.http.get(`${baseUrl}/Search/${text}`)
-        //            .then(response => {
-        //                return response.content;
-        //            })
-        //            .catch(error => {
-        //                console.log("----- error getting reviewers -------------");
-        //            });
-        //        resolve(found);
-
-        //    }, timeout);
-        //});
-
-
-        //return new Promise(resolve => {
-        //    setTimeout(() => {
-        //        var request = this.http.createRequest();
-        //        var obj = { BusinessCapability: obj };
-        //        request.asPut()
-        //            .withUrl(`${baseUrl}/Search/`)
-        //            .withHeader("Accept", "application/json")
-        //            .withHeader("Content-Type", "application/json")
-        //            .withContent(JSON.stringify(obj));
-
-        //        let found = request.send()
-        //            .then(response => {
-        //                return response.content
-        //            })
-        //            .catch(error => {
-        //                console.log("----- error getting reviewers -------------");
-        //            });
-
-        //        resolve(found);
-
-        //    }, timeout);
-        //});
-
-        //return new Promise(resolve => {
-        //    setTimeout(() => {
-        //        text = URLEncode(text)
-        //        let found = this.http.get(`${baseUrl}/Search/${text}`)
-        //            .then(response => {
-        //                return response.content;
-        //            })
-        //            .catch(error => {
-        //                console.log("----- error getting reviewers -------------");
-        //            });
-        //        resolve(found);
-        //    }, timeout);
-        //});
     }
 }
 

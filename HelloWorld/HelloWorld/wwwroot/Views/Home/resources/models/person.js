@@ -1,12 +1,45 @@
-﻿export class DowAuthor extends Person  {
-    constructor(id, firstName, lastName) {
-        super(firstName, lastName);
-        this.id = id;
+﻿import { inject } from 'aurelia-framework';
+import { HashSet } from "../services/hashSet"
+
+let FirstName = Symbol();
+
+@inject(HashSet)
+export class DowAuthor extends Person  {
+
+    hashset = new HashSet();
+
+    constructor(id, FirstName, LastName) {
+        super(FirstName, LastName);
+        this.DowId = id;
+        this.hashset = new HashSet();
+        this.hashset.add(this.id);
     }
 
-    get dowAuthorName() {
-        return authorName() + " (" + id + ");";
+    toString() {
+        return `${this.authorName()} (${this.DowId})`;
     }
+
+    // convert to JSON string
+    toJSON() {
+        return {
+            DowId: this.DowId,
+            FirstName: this[FirstName],
+            LastName: this[LastName]
+        };
+    }
+
+    //convert the string into a JavaScript object:
+    //var obj = JSON.parse(text);
+    //toObject(text) {
+    //    var obj = JSON.parse(text);
+    //    return newDowAuthor(obj);
+    //}
+
+    // revive instances during JSON.parse. It is trivial in your case:
+    //static fromJSON(obj) {
+    //    return new this(obj);
+    //}
+
 }
 
 export class NonDowAuthor extends Person {
@@ -15,8 +48,8 @@ export class NonDowAuthor extends Person {
         super("", "");
     }
 
-    getNonDowAuthor() {
-        return this.lastName + ", " + this.firstName + ";";
+    toString() {
+        return `${this.authorName()};`;
     }
 
     /**
@@ -50,9 +83,21 @@ export class NonDowAuthor extends Person {
 
 class Person {
 
-    constructor(firstName, lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    constructor(FirstName, LastName) {
+        this[FirstName] = FirstName;
+        this[LastName] = LastName;
+    }
+
+    get FirstName() {
+        return this[FirstName];
+    }
+
+    set FirstName(FirstName) {
+        if (FirstName) this[FirstName] = FirstName
+    }
+
+    authorName() {
+        return `${this[LastName]}, ${this[FirstName]}`;
     }
 
     /**

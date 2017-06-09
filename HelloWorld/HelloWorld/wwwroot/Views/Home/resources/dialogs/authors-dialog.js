@@ -1,7 +1,6 @@
 ﻿import { inject, bindable, bindingMode } from 'aurelia-framework';
 import { DialogController } from 'aurelia-dialog';
 import { UserData } from "../services/userData"
-import { HashSet } from "../services/hashSet"
 import { DataObjectUtility } from "../services/dataUtility"
 
 /**
@@ -23,7 +22,7 @@ import { DataObjectUtility } from "../services/dataUtility"
  * - selectedAuthor - author selected
  * - userdata       - service to retrieve user data
  */
-@inject(DialogController, UserData, HashSet)
+@inject(DialogController, UserData)
 export class AuthorDialog {
     heading = 'Search for Author';
 
@@ -41,10 +40,9 @@ export class AuthorDialog {
      * @param userData      - service to retrieve user data
      * @param set           - hashset of dow authors
      */
-    constructor(controller, userData, set) {
+    constructor(controller, userData) {
         this.controller = controller;
         this.userData = userData;
-        this.set = set;
         this.loadingSpinner = false;
         controller.settings.centerHorizontalOnly = true;
     }
@@ -75,7 +73,7 @@ export class AuthorDialog {
             var tmpAuthor = this.data.authors[author];
             if (this.set.contains(tmpAuthor.DowId) === false) {
                 this.finalAuthors.push(tmpAuthor);
-                this.set.add(tmpAuthor.DowId)
+                this.data.set.add(tmpAuthor.DowId)
             }
         }
     }
@@ -85,9 +83,9 @@ export class AuthorDialog {
      * @param author - author object added to array
      */
     add(obj) {
-        if (this.set.contains(obj.DowId) === false) {
+        if (this.data.set.contains(obj.DowId) === false) {
             this.finalAuthors.push(obj);
-            this.set.add(obj.DowId)
+            this.data.set.add(obj.DowId)
         }
     }
 
@@ -100,7 +98,7 @@ export class AuthorDialog {
             console.log(this.finalAuthors[i].DowId);
             var str = this.finalAuthors[i].DowId;
             if (str.localeCompare(author.DowId) === 0) {
-                this.set.remove(author.DowId);
+                this.data.set.remove(author.DowId);
                this.finalAuthors.splice(i, 1);
             } 
         } 

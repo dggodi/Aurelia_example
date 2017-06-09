@@ -1,7 +1,7 @@
 ﻿import { transient } from 'aurelia-framework';
 
 @transient()
-export class HashSet {
+export class HashMap {
 
     constructor() {
         this.set = {};
@@ -12,9 +12,9 @@ export class HashSet {
         return this.count;
     }
 
-    add(key) {
+    add(key, value) {
         if (this.contains(key) === false) {
-            this.set[key] = true;
+            this.set[key] = value;
             this.count++;
         }
     }
@@ -27,9 +27,9 @@ export class HashSet {
         this.set = {}
     }
 
-    remove(value) {
-        if (this.contains(value) === true) {
-            delete this.set[value];
+    remove(key) {
+        if (this.contains(key) === true) {
+            delete this.set[key];
             this.count--;
         }
     }

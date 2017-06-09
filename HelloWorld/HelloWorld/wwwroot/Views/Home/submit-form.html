@@ -162,4 +162,24 @@
             </div>
         </div>
     </section>
+
+
+    <div class="input-group">
+        <span css="background-color:${test? '#eee' : '#f00'}; color:${test? '#555' : '#fff'}"
+              class="input-group-addon">Title<span class="error">*</span></span>
+        <input class="form-control" name="title" placeholder="Enter Title" value="" />
+    </div>
+    <div class="input-group lg-line-seperation">
+        <span css.bind="getTest(test)"
+              class="input-group-addon">Title<span class="error">*</span></span>
+        <input class="form-control" name="title" placeholder="Enter Title" value="" />
+    </div>
+    <div class="input-group lg-line-seperation">
+        <span css.bind="getTest(errorFields.TITLE)"
+              class="input-group-addon">Title<span class="error">*</span></span>
+        <input class="form-control" name="title" placeholder="Enter Title" value="" />
+    </div>
+
+    <button type="button" class="btn btn-default" click.delegate="submit()">Submit</button>
+    <button type="button" class="btn btn-default" click.delegate="cancel()">Cancel</button>
 </template>
