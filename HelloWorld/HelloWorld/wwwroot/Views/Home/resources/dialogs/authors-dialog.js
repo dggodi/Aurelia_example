@@ -2,7 +2,7 @@
 import { DialogController } from 'aurelia-dialog';
 import { UserData } from "../services/userData"
 import { DataObjectUtility } from "../services/dataUtility"
-
+import { ValidateForm, RequiredFieldList} from "../services/DataFormUtility" 
 /**
  * program purpose:
  * - Modal service used to search by name or DowId and retreive dow authors from active directory and
@@ -11,7 +11,7 @@ import { DataObjectUtility } from "../services/dataUtility"
  * - then cancel or continue the current operation.
  *
  * two-way binded dictionary
- * - name                        - value bound to view
+ * - dowName                        - value bound to view
  *
  * local dictionary
  * - authors        - temp container for populating authors in select
@@ -26,7 +26,7 @@ import { DataObjectUtility } from "../services/dataUtility"
 export class AuthorDialog {
     heading = 'Search for Author';
 
-    @bindable name;
+    @bindable({ defaultBindingMode: bindingMode.twoWay }) dowName;
 
     authors = [];
     finalAuthors = [];
@@ -53,12 +53,12 @@ export class AuthorDialog {
      */
     activate(data) {
         this.data = data;
-        this.name = data.name;
+        this.dowName = data.dowName;
         
-        if (this.name != null){
-            if (this.name.length >= 3) {
+        if (this.dowName != null){
+            if (this.dowName.length >= 3) {
                 this.loadingSpinner = true;
-                this.search(this.name);
+                this.search(this.dowName);
             }
         }
     }
@@ -71,9 +71,9 @@ export class AuthorDialog {
     created() {
         for (var author in this.data.authors) {
             var tmpAuthor = this.data.authors[author];
-            if (this.set.contains(tmpAuthor.DowId) === false) {
+            if (this.data.authorMap.contains(tmpAuthor.DowId) === false) {
                 this.finalAuthors.push(tmpAuthor);
-                this.data.set.add(tmpAuthor.DowId)
+                this.data.authorMap.add(tmpAuthor.DowId)
             }
         }
     }
@@ -83,9 +83,9 @@ export class AuthorDialog {
      * @param author - author object added to array
      */
     add(obj) {
-        if (this.data.set.contains(obj.DowId) === false) {
+        if (this.data.authorMap.contains(obj.DowId) === false) {
             this.finalAuthors.push(obj);
-            this.data.set.add(obj.DowId)
+            this.data.authorMap.add(obj.DowId)
         }
     }
 
@@ -98,7 +98,7 @@ export class AuthorDialog {
             console.log(this.finalAuthors[i].DowId);
             var str = this.finalAuthors[i].DowId;
             if (str.localeCompare(author.DowId) === 0) {
-                this.data.set.remove(author.DowId);
+                this.data.authorMap.remove(author.DowId);
                this.finalAuthors.splice(i, 1);
             } 
         } 
@@ -108,10 +108,10 @@ export class AuthorDialog {
      * if newValue > 3 call search to retrieve user data
      * @param newValue - DowId or name or user 
      */
-    nameChanged(newValue) {
+    dowNameChanged(newValue) {
         if (newValue.length >= 3) {
             this.loadingSpinner = true;
-            this.search(this.name);
+            this.search(this.dowName);
         }
     }
     
@@ -121,6 +121,7 @@ export class AuthorDialog {
      */
     submit() {
         this.data.authors = this.finalAuthors;
+        this.data.utility.setSuccess(RequiredFieldList.AUTHOR, true);
         this.controller.ok();
     }
 
@@ -132,17 +133,26 @@ export class AuthorDialog {
         if (JSON.stringify(DataObjectUtility.cloneObject(this.finalAuthors)) !=
             JSON.stringify(this.data.authors)) {
             if (confirm("Unsaved data, are you sure you want to navigate away?")) {
+                this.resetSuccessOfField(this.finalAuthors);
                 this.controller.cancel();
             }
         }
-        else this.controller.cancel();
+        else {
+            this.resetSuccessOfField(this.finalAuthors);
+            this.controller.cancel();
+        }
+    }
+
+    resetSuccessOfField(data) {
+        if (ValidateForm.isEmptyContainer(data) == false)
+            this.data.utility.setSuccess(RequiredFieldList.AUTHOR, false);
     }
 
     /**
      * if successful retrieve user data from the userData Service
      */
-    search(name) {
-        this.userData.search(name)
+    search(dowName) {
+        this.userData.search(dowName)
             .then(authors => {
                 var result = authors;
                 if (result === false)

@@ -3,7 +3,8 @@ import { DialogService } from 'aurelia-dialog';
 import { FinalReviewerData } from "../services/finalReviewerData";
 import { HashSet } from "../services/hashSet"
 import { FinalReviewerDialog } from "../dialogs/FinalReviewerDialog"
-
+import { CSSUtility } from "../services/CSSUtility"
+import { RequiredFieldList, ValidateForm } from "../services/dataFormUtility"
 /**
  * program purpose:
  * - Retreive business capabilities from database to populate select element.
@@ -21,9 +22,12 @@ import { FinalReviewerDialog } from "../dialogs/FinalReviewerDialog"
 @inject(DialogService, FinalReviewerData, HashSet, Element)
 export class RetrieveBusinesses {
     @bindable({ defaultBindingMode: bindingMode.twoWay }) reviewer
+    @bindable required;
+    @bindable utility;
+    @bindable success;
 
     businessCapabilities = [];
-    selectedBusinessCapabilities = [];
+    @bindable({ defaultBindingMode: bindingMode.twoWay }) selectedBusinessCapabilities = [];
     parent;
     select2 = null;
 
@@ -74,9 +78,14 @@ export class RetrieveBusinesses {
         this.select2.val(this.selectedBusinessCapabilities).trigger("change");
         // if any value in the select is changed add new value to the business / capabilites container
         this.select2.on('change', (e) => {
-            this.selectedBusinessCapabilities = this.getMultiValues();
+            let temp = this.getMultiValues();
+            if (ValidateForm.isEmptyContainer(temp) == false)
+                this.utility.setSuccess(RequiredFieldList.FINAL_REVIEWER, false);
+
+            this.selectedBusinessCapabilities = temp;
         });
     }
+
     /**
      * remove select2 and restore select back to regualr dropdown and remove listener
      *
@@ -99,6 +108,14 @@ export class RetrieveBusinesses {
         }
         return select;
     }
+
+    isError(obj) {
+        if (obj)
+            return CSSUtility.isValidFieldSuccess();
+        else
+            return CSSUtility.isValidFieldError();
+    }
+
     /**
      * calls dialog service which passes the following parameters viewModel and the model to the service
      * @param authors - ref to authors stored in subfrom

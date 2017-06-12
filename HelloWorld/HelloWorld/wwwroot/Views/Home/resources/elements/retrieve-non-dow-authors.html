@@ -1,6 +1,8 @@
 ﻿<template>
     <div class="input-group">
-        <span class="input-group-addon">Non Dow Authors<span class="error">*</span></span>
+        <span class="input-group-addon" css.bind="isError(success)">
+            Non Dow Authors<span class="error" bind.show="required">*</span>
+        </span>
         <input type="text" placeholder="Smith, John" class="form-control" value.bind="name" />
         <span class="input-group-btn">
             <button type="button" class="btn btn-primary btn-block"  click.trigger="add()">Add</button>
@@ -12,7 +14,7 @@
                 ${author}
             </div>
             <div class="col-sm-4">
-                <button type="button" class="btn btn-primary btn-group-xs pull-right" click.delegate="remove(author)">-</button>
+                <button type="button" class="btn btn-primary btn-xs pull-right" click.delegate="remove(author)">-</button>
             </div>
         </div>
     </div>

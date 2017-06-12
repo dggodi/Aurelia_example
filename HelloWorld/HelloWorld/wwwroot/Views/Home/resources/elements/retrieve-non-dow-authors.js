@@ -60,7 +60,9 @@ function formatName(data) {
 @inject(HashSet)
 export class RetrieveNonDowAuthors {
     @bindable({ defaultBindingMode: bindingMode.twoWay }) authors;
-
+    @bindable required;
+    @bindable utility;
+    @bindable success;
     finalAuthors = [];
     error = "";
     name = "";

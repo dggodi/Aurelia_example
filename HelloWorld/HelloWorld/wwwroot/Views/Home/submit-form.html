@@ -3,16 +3,17 @@
         <div class="form-group">
             <h3>
                 <label for="reports">Submission Form &nbsp;&nbsp;&nbsp;</label>
-                <select class="form-control" id="reports" value.bind="selectedReport">
+                <select class="form-control" id="reports" value.bind="selectedReport" change.delegate="changeReportCurrentBrowsers($event)">
                     <option model.bind="null">Choose A Report Type</option>
-                    <option repeat.for="reportSelection of reportSelections" model.bind="reportSelection">
-                        ${reportSelection}
+                    <option disable>-------------------------</option>
+                    <option repeat.for="reportSelection of reportSelections" model.bind="reportSelection" click.delegate="changeReportIE(reportSelection)">
+                        ${reportSelection.name}
                     </option>
                 </select>
             </h3>
         </div>
     </section>
-    <section class="container">
+    <section class="container" show.bind ="showReport">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="panel panel-default">
@@ -26,11 +27,18 @@
                             </p>
                             <div class="col-lg-7 col-sm-12 line-spacing">
                                 <require from="./resources/elements/retrieve-businesses"></require>
-                                <retrieve-businesses reviewer.two-way="finalReviewer" loadingSpinner.two-way="loadingSpinner"></retrieve-businesses>
+                                <retrieve-businesses reviewer.two-way="finalReviewer" loadingSpinner.two-way="loadingSpinner"
+                                    success.bind="requiredElementData[requiredFieldList.FINAL_REVIEWER].success" 
+                                    required.bind="requiredElementData[requiredFieldList.FINAL_REVIEWER].required"
+                                    utility.bind="dataUtility" selectedBusinessCapabilities.bind="selectedBusinessCapabilities">
+                                </retrieve-businesses>
                             </div>
                             <div class="col-lg-5 col-sm-12 line-spacing">
                                 <div class="input-group">
-                                    <span class="input-group-addon">Final Reviewer<span class="error">*</span></span>
+                                    <span class="input-group-addon"
+                                        css.bind="isError(requiredElementData[requiredFieldList.FINAL_REVIEWER].success)">
+                                        Final Reviewer<span class="error" show.bind="requiredElementData[requiredFieldList.FINAL_REVIEWER].required">*</span>
+                                    </span>
                                     <input type="text" class="form-control" id="reviewer" value.bind="finalReviewer" readonly />
                                 </div>
                             </div>
@@ -38,16 +46,22 @@
                         <div class="row">
                             <div class="col-lg-7 col-sm-12 line-spacing">
                                 <div class="input-group">
-                                    <span class="input-group-addon">ELN Project<span class="error">*</span></span>
-                                    <select class="form-control" >
+                                    <span class="input-group-addon"
+                                        css.bind="isError(requiredElementData[requiredFieldList.EXPORT_CONTROL].success)"> ELN Project
+                                        <span class="error" show.bind="requiredElementData[requiredFieldList.EXPORT_CONTROL].required">*</span>
+                                    </span>
+                                    <select class="form-control" value.bind="selectedELN">
                                         <option model.bind="null">Select ELN Project</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-lg-5 col-sm-12 line-spacing">
                                 <div class="input-group">
-                                    <span class="input-group-addon">DateBook Number</span>
-                                    <input class="form-control" name="ELN_project" placeholder="Enter #" value="" />
+                                    <span class="input-group-addon"
+                                          success.bind="requiredElementData[requiredFieldList.DATABOOK_NUM].success">
+                                          DateBook Number <span class="error" show.bind="requiredElementData[requiredFieldList.DATABOOK_NUM].required">*</span>
+                                    </span>
+                                    <input class="form-control" placeholder="Enter #" value.bind="databookNumber" />
                                 </div>
                             </div>
                         </div>
@@ -67,9 +81,13 @@
                         <div class="row">
                             <div class="col-lg-7 col-sm-12 line-spacing">
                                 <div class="input-group">
-                                    <span class="input-group-addon">Report Number<span class="error">*</span></span>
-                                    <input class="form-control" name="report_number" placeholder="Enter #" value="" />
+                                    <span class="input-group-addon"
+                                        css.bind="isError(requiredElementData[requiredFieldList.REPORT_NUM].success)">Report Number
+                                        <span class="error" show.bind="requiredElementData[requiredFieldList.REPORT_NUM].required">*</span>
+                                    </span>
+                                    <input class="form-control" name="report_number" placeholder="Enter #" value.bind="reportNumber" />
                                 </div>
+                                
                             </div>
                             <div class="col-lg-5 col-sm-12 line-spacing">
                                 <div class="simple-checkbox">
@@ -82,7 +100,7 @@
             </div>
         </div>
     </section>
-    <section class="container">
+    <section class="container" show.bind ="showReport">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="panel panel-default">
@@ -136,22 +154,37 @@
                             <div class="form-horizontal">
                                 <div class="col-lg-5 col-sm-12  ">
                                     <div class="input-group lg-line-seperation">
-                                        <span class="input-group-addon">Title<span class="error">*</span></span>
-                                        <input class="form-control" name="title" placeholder="Enter Title" value="" />
+                                        <span class="input-group-addon"
+                                            css.bind="isError(requiredElementData[requiredFieldList.TITLE].success)">
+                                            Title<span class="error" show.bind="requiredElementData[requiredFieldList.TITLE].required">*</span>
+                                        </span>
+                                        <input class="form-control" name="title" value.bind="title" placeholder="Enter Title" />
                                     </div>
 
                                     <div class="lg-line-seperation">
                                         <require from="./resources/elements/retrieve-authors"></require>
-                                        <retrieve-authors authors.bind="dowAuthors"></retrieve-authors>
+                                        <retrieve-authors authors.two-way="dowAuthors" loadingSpinner.two-way="loadingSpinner"
+                                            success.bind="requiredElementData[requiredFieldList.AUTHOR].success"
+                                            required.bind="requiredElementData[requiredFieldList.AUTHOR].required"
+                                            utility.bind="dataUtility" name.bind="dowName">
+                                        </retrieve-authors>
+                                        
                                     </div>
+
                                     <require from="./resources/elements/retrieve-non-dow-authors"></require>
-                                    <retrieve-non-dow-authors authors.bind="nonDowAuthors"></retrieve-non-dow-authors>
+                                    <retrieve-non-dow-authors authors.two-way="nonDowAuthors" loadingSpinner.two-way="loadingSpinner"
+                                        success.bind="requiredElementData[requiredFieldList.NON_AUTHOR].success"
+                                        utility.bind="dataUtility">
+                                    </retrieve-non-dow-authors>
                                 </div>
 
                                 <div class="col-lg-7 col-sm-12">
                                     <div class="input-group">
-                                        <span class="input-group-addon">Abstract<span class="error">*</span></span>
-                                        <textarea class="form-control" name="ELN_project" rows=15 placeholder="" value=""></textarea>
+                                        <span class="input-group-addon"
+                                            css.bind="isError(requiredElementData[requiredFieldList.ABSTRACT].success)">
+                                            Abstract<span class="error" show.bind="requiredElementData[requiredFieldList.ABSTRACT].required">*</span>
+                                        </span>
+                                        <textarea class="form-control" name="ELN_project" rows=15 placeholder="" value.bind="reportAbstract"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -163,23 +196,9 @@
         </div>
     </section>
 
+    <section class="container" show.bind="showReport">
+        <button type="button" class="btn btn-default" click.delegate="submit()">Submit</button>
+        <button type="button" class="btn btn-default" click.delegate="cancel()">Cancel</button>
+    </section>
 
-    <div class="input-group">
-        <span css="background-color:${test? '#eee' : '#f00'}; color:${test? '#555' : '#fff'}"
-              class="input-group-addon">Title<span class="error">*</span></span>
-        <input class="form-control" name="title" placeholder="Enter Title" value="" />
-    </div>
-    <div class="input-group lg-line-seperation">
-        <span css.bind="getTest(test)"
-              class="input-group-addon">Title<span class="error">*</span></span>
-        <input class="form-control" name="title" placeholder="Enter Title" value="" />
-    </div>
-    <div class="input-group lg-line-seperation">
-        <span css.bind="getTest(errorFields.TITLE)"
-              class="input-group-addon">Title<span class="error">*</span></span>
-        <input class="form-control" name="title" placeholder="Enter Title" value="" />
-    </div>
-
-    <button type="button" class="btn btn-default" click.delegate="submit()">Submit</button>
-    <button type="button" class="btn btn-default" click.delegate="cancel()">Cancel</button>
 </template>

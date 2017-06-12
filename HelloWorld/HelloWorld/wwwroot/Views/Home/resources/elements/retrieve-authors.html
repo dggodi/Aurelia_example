@@ -1,15 +1,18 @@
 ﻿<template> 
     <div class="input-group user-space">
-        <span class="input-group-addon">Dow Authors<span class="error">*</span></span>
-        <input type="text" placeholder="Smith, John" class="form-control" value.bind="name" />
+        <span class="input-group-addon" css.bind="isError(success)">
+            Dow Authors
+            <span class="error" bind.show="required">*</span>
+        </span>
+        <input type="text" placeholder="Last Name, First Name" class="form-control" value.bind="name" />
         <span class="input-group-btn">
-            <button type="button" class="btn btn-primary btn-block"  click.trigger="openModal()">Add Final Reviewer</button>
+            <button type="button" class="btn btn-primary btn-block"  click.trigger="openModal()" innerhtml.bind="addAuthor"></button>
         </span>
     </div>
     <div id="user-space">
-        <div repeat.for="author of authors" >
+        <div repeat.for="author of authors">
             ${author.LastName}, ${author.FirstName} - ${author.DowId}
-            <button type="button" class="btn btn-primary btn-group-xs pull-right" click.delegate="remove(author)">-</button>
+            <button type="button" class="btn btn-primary btn-xs pull-right" click.delegate="remove(author)">-</button>
         </div>
     </div>
 </template>

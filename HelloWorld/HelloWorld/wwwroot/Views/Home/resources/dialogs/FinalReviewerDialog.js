@@ -3,6 +3,7 @@ import { DialogController } from 'aurelia-dialog';
 import { UserData } from "../services/userData"
 import { FinalReviewerData } from "../services/finalReviewerData";
 import { HashSet } from "../services/hashSet"
+import { RequiredFieldList} from "../services/dataFormUtility" 
 
 /**
  * convert final reviwer object values into a string
@@ -32,7 +33,7 @@ function convertObjectToString(finalReviewer) {
  * - set                    - hashset of final reviewers
  * - userdata               - service to retrieve user data
  */
-@inject(DialogController, FinalReviewerData, UserData, HashSet)
+@inject(DialogController, FinalReviewerData, UserData)
 export class FinalReviewerDialog {
 
     heading = 'Select Final Reviewer';
@@ -49,11 +50,11 @@ export class FinalReviewerDialog {
      * @param userData          - service to retrieve user data
      * @param set               - hashset of final reviewers
      */
-    constructor(controller, finalReviewerData, userData, set) {
+    constructor(controller, finalReviewerData, userData) {
         this.controller = controller;
         this.finalReviewerData = finalReviewerData;
         this.userData = userData;
-        this.set = set;
+        this.set = new HashSet();
 
         controller.settings.centerHorizontalOnly = true;
     }
@@ -110,6 +111,7 @@ export class FinalReviewerDialog {
      */
     ok() {
         this.data.reviewer = convertObjectToString(this.selectedFinalReviewer);
+        this.data.utility.setSuccess(RequiredFieldList.FINAL_REVIEWER, true);
         this.controller.ok();
     }
 
@@ -117,6 +119,7 @@ export class FinalReviewerDialog {
      * return back to the caller
      */
     cancel() {
+        this.data.utility.setSuccess(RequiredFieldList.FINAL_REVIEWER, false);
         this.controller.cancel()
     }
 

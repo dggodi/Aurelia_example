@@ -1,7 +1,7 @@
 ﻿<template bindable="finalReviewer">
     <div class="input-group">
-        <span class="input-group-addon">Business / Capabilites
-            <span class="error">*</span>
+        <span class="input-group-addon" css.bind="isError(success)">Business / Capabilites
+            <span class="error" bind.show="required">*</span>
             <i class='fa fa-spin fa-spinner' style='margin: 0 auto' if.bind="loadingSpinner"></i>
         </span>
         <select multiple class="form-control" value.bind="selectedBusinessCapabilities" style="width: 100%">
