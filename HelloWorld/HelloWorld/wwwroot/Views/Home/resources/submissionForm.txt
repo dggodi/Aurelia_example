@@ -1,0 +1,415 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<template>
+  <section class="container form-inline line-spacing">
+        <div class="form-group">
+            <h3>
+                <label for="reports">Submission Form &nbsp;&nbsp;&nbsp;</label>
+                <select class="form-control" id="reports" value.bind="selectedReport" change.delegate="changeReportCurrentBrowsers($event)">
+                    <option model.bind="null">Choose A Report Type</option>
+                    <option disable>-------------------------</option>
+                    <option repeat.for="reportSelection of reportSelections" model.bind="reportSelection" click.delegate="changeReportIE(reportSelection)">
+                        ${reportSelection.name}
+                    </option>
+                </select>
+            </h3>
+        </div>
+    </section>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.TITLE].success)">
+        Title<span class="error" show.bind="requiredElementData[requiredFieldList.TITLE].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="title" value.bind="title"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.ABSTRACT].success)">
+        Abstract<span class="error" show.bind="requiredElementData[requiredFieldList.ABSTRACT].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="abstract" value.bind="abstract"/>
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.AUTHOR].success)">
+        Author<span class="error" show.bind="requiredElementData[requiredFieldList.AUTHOR].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="author" value.bind="author"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.FINAL_REVIEWER].success)">
+        Final Reviewer<span class="error" show.bind="requiredElementData[requiredFieldList.FINAL_REVIEWER].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="finalReviewer" value.bind="finalReviewer"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.REPORT_NUM].success)">
+        Report Number<span class="error" show.bind="requiredElementData[requiredFieldList.REPORT_NUM].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="reportNumber" value.bind="reportNumber"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.LTD].success)">
+        LTD<span class="error" show.bind="requiredElementData[requiredFieldList.LTD].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="selectedBusinessLTDOption" value.bind="selectedBusinessLTDOption"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.EXPORT_CONTROL].success)">
+        Export Control<span class="error" show.bind="requiredElementData[requiredFieldList.EXPORT_CONTROL].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="selectedELN" value.bind="selectedELN"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.NON_AUTHOR].success)">
+        Non Author<span class="error" show.bind="requiredElementData[requiredFieldList.NON_AUTHOR].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="nonAuthors" value.bind="nonAuthors"  />
+    </div>
+    
+    <div class="input-group">
+      <span class="input-group-addon"
+        css.bind="isError(requiredElementData[requiredFieldList.DATABOOK_NUM].success)">
+        Databook number<span class="error" show.bind="requiredElementData[requiredFieldList.DATABOOK_NUM].required">*</span>
+      </span>
+      <input type="text" class="form-control" id="databookNumber" value.bind="databookNumber"  />
+    </div>
+    
+    <button type="button" class="btn btn-default" click.delegate="submit()">Submit</button>
+    <button type="button" class="btn btn-default" click.delegate="cancel()">Cancel</button>
+
+</template>
+
+
+import { inject, bindable, bindingMode} from "aurelia-framework";
+import {FormDataUtility, RequiredFieldList, ValidateForm} from "./dataFormUtility"
+import {CSSUtility} from "./CSSUtility"
+import {HashMap} from "./hashMap"
+
+let _reportSelections = {
+    CRI: 0,
+    PROJECT_LEARNING: 1,
+    TECH_LEARNING: 2
+}
+
+var centralReportIndex = [0, 1, 2, 3, 4, 5, 6];
+var projectLearning = [1, 4, 5, 7, 8];
+var technicalMeeting = [1, 3, 4, 5, 7, 8];
+ 
+@inject(FormDataUtility, RequiredFieldList, HashMap)
+export class App {
+  
+  reportSelections = [
+        { id: 0, name: 'CRI' },
+        { id: 1, name: 'Project Learnings' },
+        { id: 2, name: 'Technical Meetings' }
+  ];
+  
+  final = {}
+  optional = {}
+  
+  constructor(formDataUtility, requiredFieldList, map) { 
+    this.dataUtility = new FormDataUtility(); 
+    this.requiredElementData = this.dataUtility.getRequiredElementData();
+    this.requiredFieldList = requiredFieldList;
+     
+    this.final = new HashMap();
+    this.optional = new HashMap(); 
+    
+    this.reset(); 
+  }
+  
+  cancel() {
+    this.reset(); 
+  }
+  
+  changeReportIE(report) {
+    this.changeReport(report);
+  }
+
+  changeReportCurrentBrowsers(event) {       
+    this.changeReport(this.selectedReport);
+  }
+  
+    changeReport(report) {
+
+        this.reset();
+        if (report != null) {
+            this.showReport = true; 
+            switch (report.id) {
+                case _reportSelections.CRI: {
+                    for (let i = 0; i < centralReportIndex.length; i++) {
+                        if(this.dataUtility.isDisable(centralReportIndex[i]) === false)
+							            this.dataUtility.setRequired(centralReportIndex[i], true);
+                    }
+                    break;
+                }
+
+                case _reportSelections.PROJECT_LEARNING: {
+                    for (let i = 0; i < projectLearning.length; i++) 
+                        this.dataUtility.setRequired(projectLearning[i], false);
+
+                    break;
+                }
+
+                case _reportSelections.TECH_LEARNING: {
+                    for (let i = 0; i < technicalMeeting.length; i++)
+                        this.dataUtility.setRequired(technicalMeeting[i], false);
+ 
+                    break; 
+                }
+            }
+        }
+        
+        for (let i in this.requiredFieldList) {
+          if(this.dataUtility.getRequired(RequiredFieldList[i]) === true){
+            this.final.add(RequiredFieldList[i], true);
+          }
+          else{
+            this.optional.add(RequiredFieldList[i], true);
+          }
+        }
+    }
+    
+  submit() {
+    if (this.isFormValid()) {
+      console.log("OK")
+    }
+    else {
+      console.log("NOT OK")  
+    }
+  }
+    
+  reset() {  
+    for (let i in this.requiredFieldList) { 
+      if(this.dataUtility.isDisable(RequiredFieldList[i]) == false){
+        this.dataUtility.setRequired(RequiredFieldList[i], true);
+      }
+      this.dataUtility.setSuccess(RequiredFieldList[i], true); 
+    }
+   
+  }
+  
+  isError(obj) {
+    if (obj)
+      return CSSUtility.isValidFieldSuccess(); 
+    else
+      return CSSUtility.isValidFieldError(); 
+  }
+  
+  isFormValid() {
+    let valid = true;
+		      for (let i in RequiredFieldList) {
+    
+		        if(this.final.contains(RequiredFieldList[i])){
+		          let obj = '#' + this.dataUtility.getID(RequiredFieldList[i]);
+		        //console.log("App :: isFormValid - obj: " + obj);
+		        let s = $(obj).val();
+		        //console.log("App :: isFormValid - s: " + s);
+		        valid = this.dataUtility.setSuccess(RequiredFieldList[i], ValidateForm.isEmpty(s))
+		        console.log(this.dataUtility.getSuccess(RequiredFieldList.TITLE));
+		        }
+		      }
+
+		return valid
+	}
+
+}
+
+
+
+////////////////////////////////////////////////
+
+hashmap
+import { transient } from 'aurelia-framework';
+
+
+
+@transient()
+
+export class HashMap {
+
+    constructor() {
+        this.set = {};
+        this.count = 0;
+    }
+
+    size() {
+        return this.count;
+    }
+
+    add(key, value) {
+        if (this.contains(key) === false) {
+            this.set[key] = value;
+            this.count++;
+        }
+    }
+
+    contains(key) {
+        return this.set.hasOwnProperty(key);
+    }
+
+    clear() {
+        this.set = {}
+    }
+
+
+    remove(key) {
+        if (this.contains(key) === true) {
+            delete this.set[key];
+            this.count--;
+        }
+    }
+
+    isEmpty() {
+        return this.data.length === 0;
+    }
+
+};
+
+////////////////////////////////////////////////
+
+<template>
+  <require from="./my-component"></require>
+  <button click.delegate="reset()">reset</button>
+  <my-component utility.bind="dataUtility"></my-component>
+</template>
+
+import { transient } from 'aurelia-framework';
+
+export var RequiredFieldList = { 
+  TITLE: 0,
+  ABSTRACT: 1,
+  AUTHOR: 2,
+  FINAL_REVIEWER: 3,
+  REPORT_NUM: 4,
+  LTD: 5,
+  EXPORT_CONTROL: 6, 
+  NON_AUTHOR: 7,
+  DATABOOK_NUM: 8
+};
+
+let RequiredElementData = [
+    { id: "title", key: "TITLE", title: "Title", error: "A Report Title is requried", success: true, required: true, disable: false },
+    { id: "abstract", key: "ABSTRACT", title: "Report Abstract", error: "A Report Abstract is requried", success: true, required: true, disable: false },
+    { id: "dowAuthors", key: "AUTHOR", title: "Dow Author", error: "A Dow Author is requried", success: true, required: true, disable: false },
+    { id: "finalReviewer", key: "FINAL_REVIEWER", title: "Business / Capability", error: "A Final Reviewer is requried", success: true, required: true, disable: false },
+    { id: "reportNumber", key: "REPORT_NUM", title: "Report Number", error: "A Report Number is requried", success: true, required: true, disable: false },
+    { id: "LTD", key: "LTD", title: "Limited Distribution", error: "Limited Distribution is requried", success: true, required: true, disable: false },
+    { id: "ELN", key: "EXPORT_CONTROL", title: "Export Control", error: "Export Control is requried", success: true, required: true, disable: false },
+    { id: "databookNumber", key: "NON_AUTHOR", title: "Non Dow Author", error: "Dow Author", success: true, required: true, disable: true },
+    { id: "nonDowAuthors", key: "DATABOOK_NUM", title: "Data Book Number", error: "Data Book NUmber has incorrect format", success: true, required: true, disable: true }
+];
+
+
+@transient()
+export class FormDataUtility {
+  
+  constructor(){
+    this.requiredElementData = RequiredElementData;
+  }
+  
+  getID(obj){
+    this.requiredElementData[obj].id;  
+  }
+  
+  isDisable(obj){
+    this.requiredElementData[obj].disable;  
+  }
+  
+  getRequiredElementData(){
+    return this.requiredElementData;  
+  }
+  
+  setSuccess(obj, value) { 
+     this.requiredElementData[obj].success = value;
+    return this.requiredElementData[obj].success
+  }
+  
+  setRequired(obj, value) {
+    this.requiredElementData[obj].required = value;
+    return this.requiredElementData[obj].required;
+  } 
+
+  getSuccess(obj){
+    return this.requiredElementData[obj].success;
+  }
+
+  getRequired(obj){
+    return this.requiredElementData[obj].required;
+  }
+}
+
+export class ValidateForm {
+    static isEmpty(str) {
+        return (!!str);
+    }
+
+    static isEmptyContainer(obj) {
+        return (typeof obj != "undefined" && obj != null && obj.length > 0)
+    }
+}
+
+// css utility
+let ErrorFieldCSS = { originalBG: "#eee", originalColor: "#555", errorBG: "#f00", errorColor: "#fff" }
+
+export class CSSUtility {
+  
+  static isValidFieldSuccess() {
+    return "background-color:" + ErrorFieldCSS.originalBG + "; color:" + ErrorFieldCSS.originalColor;
+  }
+  
+  static isValidFieldError() {
+    return "background-color:" + ErrorFieldCSS.errorBG + "; color:" + ErrorFieldCSS.errorColor;
+  }
+}
+
+
+// css utility
+let ErrorFieldCSS = { originalBG: "#eee", originalColor: "#555", errorBG: "#f00", errorColor: "#fff" }
+
+export class CSSUtility {
+  
+  static isValidFieldSuccess() {
+    return "background-color:" + ErrorFieldCSS.originalBG + "; color:" + ErrorFieldCSS.originalColor;
+  }
+  
+  static isValidFieldError() {
+    return "background-color:" + ErrorFieldCSS.errorBG + "; color:" + ErrorFieldCSS.errorColor;
+  }
+}  
+
+
+<template>
+  <div class="input-group">
+      <span class="input-group-addon">Title<span class="error">*</span></span>
+      <input class="form-control" name="title" value.bind="title" placeholder="Enter Title" value="" />
+  </div>
+</template>
+
+import { bindable } from 'aurelia-framework';
+
+export class MyComponent {
+  
+  @bindable utility
+  
+  reset() {
+    if(this.utility.getReset())
+    this.title = "";  
+  }
+}
