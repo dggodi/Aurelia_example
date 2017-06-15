@@ -1,0 +1,36 @@
+Product product = new Product();
+ 2
+ 3product.Name = "Apple";
+ 4product.ExpiryDate = new DateTime(2008, 12, 28);
+ 5product.Price = 3.99M;
+ 6product.Sizes = new string[] { "Small", "Medium", "Large" };
+ 7
+ 8string output = JsonConvert.SerializeObject(product);
+ 9//{
+10//  "Name": "Apple",
+11//  "ExpiryDate": "2008-12-28T00:00:00",
+12//  "Price": 3.99,
+13//  "Sizes": [
+14//    "Small",
+15//    "Medium",
+16//    "Large"
+17//  ]
+18//}
+19
+20Product deserializedProduct = JsonConvert.DeserializeObject<Product>(output);
+
+
+
+Product product = new Product();
+ 2product.ExpiryDate = new DateTime(2008, 12, 28);
+ 3
+ 4JsonSerializer serializer = new JsonSerializer();
+ 5serializer.Converters.Add(new JavaScriptDateTimeConverter());
+ 6serializer.NullValueHandling = NullValueHandling.Ignore;
+ 7
+ 8using (StreamWriter sw = new StreamWriter(@"c:\json.txt"))
+ 9using (JsonWriter writer = new JsonTextWriter(sw))
+10{
+11    serializer.Serialize(writer, product);
+12    // {"ExpiryDate":new Date(1230375600000),"Price":0}
+13}
