@@ -1,0 +1,97 @@
+<section class="container" show.bind="showReport">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix line-spacing">
+                        <h3 class="panel-title">Document Entry</h3>
+                    </div>
+                
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group-btn">
+                                    <div>
+                                        <a id="docxbtn" class="btn btn-primary">
+                                            Upload Word Doc
+                                            <input type="file" id="docx_file_upload" class="docxbtn" multiple
+                                                files="on-loaded.bind: docxFileCallback; read-as.bind: 'text'; file-filter.bind: 'vnd.openxmlformats-officedocument.wordprocessingml.document.*';" />
+                                        </a>
+                                        <a id="pdfbtn" class="btn btn-primary">
+                                            Upload PDF Doc
+                                            <input type="file" id="pdf_file_upload" class="pdfbtn" multiple
+                                                files="on-loaded.bind: pdfFileCallback; read-as.bind: 'text'; file-filter.bind: 'pdf.*';" />
+                                        </a>
+
+                                        <a id="supportingbtn" class="btn btn-primary">
+                                            Upload Supporting Documents
+                                            <input type="file" id="supporting_files_upload" class="supportingbtn" multiple
+                                                files="on-loaded.bind: multipleSupportingFilesLoadedCallback; file-filter.bind: 'text|image|doc|pdf|png|jpeg|gif|bmp|ppt|excel|vnd.openxmlformats-officedocument.wordprocessingml.document.*';" />
+                                        </a>
+                                    </div>
+
+                                    <div class="input-group-btn">
+                                        <ul class="dropdown-menu pull-right">
+                                            <li repeat.for="report of reports">sdfsd ${report}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div><!-- col -->
+
+                            <div class="col-lg-6 col-sm-12 line-spacing">
+                                <div class="input-group-btn">
+                                    <div id="upload-space">
+                                        <button type="button" class="btn btn-default dropdown-toggle" style="width:100%; margin-top:-10px"
+                                            data-toggle="dropdown">
+                                            Documents Uploaded
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li><a href="#">Action</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- end row -->
+
+                        <div class="row">
+                            <div class="col-lg-5 col-sm-12 ">
+                                
+                                <div class="input-group line-spacing">
+                                    <span class="input-group-addon"
+                                          css.bind="isError(requiredElementData[requiredFieldList.TITLE].success)">
+                                        Title<span class="error" show.bind="requiredElementData[requiredFieldList.TITLE].required">*</span>
+                                    </span>
+                                    <input type="text" class="form-control" id="title" value.bind="title" />
+                                </div>
+
+                                <div class="lg-line-seperation">
+                                    <require from="./resources/elements/retrieve-authors"></require>
+                                    <retrieve-authors authors.two-way="dowAuthors" loadingSpinner.two-way="loadingSpinner"
+                                        success.bind="requiredElementData[requiredFieldList.AUTHOR].success"
+                                        utility.bind="dataUtility">
+                                    </retrieve-authors>
+                                </div>
+
+                                <require from="./resources/elements/retrieve-non-dow-authors"></require>
+                                <retrieve-non-dow-authors authors.two-way="nonDowAuthors" loadingSpinner.two-way="loadingSpinner"
+                                    success.bind="requiredElementData[requiredFieldList.NON_AUTHOR].success"
+                                    utility.bind="dataUtility" name.bind="dowName">
+                                </retrieve-non-dow-authors>
+                            </div>
+
+                            <div class="col-lg-7 col-sm-12">
+                                <div class="input-group">
+                                    <span class="input-group-addon"
+                                          css.bind="isError(requiredElementData[requiredFieldList.ABSTRACT].success)">
+                                        Abstract<span class="error" show.bind="requiredElementData[requiredFieldList.ABSTRACT].required">*</span>
+                                    </span>
+                                    <textarea class="form-control" name="ELN_project" rows=15 placeholder="" value.bind="reportAbstract"></textarea>
+                                </div>
+                            </div>
+                        </div> <!-- end row -->   
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
