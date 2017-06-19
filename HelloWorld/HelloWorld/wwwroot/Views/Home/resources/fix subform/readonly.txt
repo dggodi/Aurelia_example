@@ -1,0 +1,73 @@
+<template>
+  <require from="./retrieve-eln"></require>
+  
+  <retrieve-eln></retrieve-eln>
+  
+  <input id="databookNumber" css.bind="isReadOnly(requiredElementData[requiredFieldList.DATABOOK_NUM].required)"/>
+ 
+  <require from="./authors"></require>
+  
+  <!--<authors title.bind="requiredElementData[requiredFieldList.AUTHOR].title"></authors>
+  -->
+  <authors title.bind="requiredFieldList.AUTHOR" utility.bind="dataUtility"></authors>
+  
+  <button click.delegate="submit()">CRI</button>
+  <button click.delegate="clear()">Project Learnings</button>     
+</template>
+
+
+
+
+import {FormDataUtility, RequiredFieldList, ValidateForm} from "./dataFormUtility"
+import {CSSUtility} from "./CSSUtility"
+
+export class App {
+  
+  dataUtility = new FormDataUtility();
+  requiredFieldList = RequiredFieldList;
+  
+  constructor(){ 
+    this.requiredElementData = this.dataUtility.getRequiredElementData();
+      }
+  
+  submit(){
+    $("#databookNumber").attr('readonly', true);
+    $("#ELN").removeAttr('disabled');
+    this.dataUtility.setRequired(RequiredFieldList.DATABOOK_NUM, false); 
+  } 
+  
+  clear(){
+    $("#ELN").attr("disabled", "disabled");
+    $("#databookNumber").removeAttr('readonly');
+    this.dataUtility.setRequired(RequiredFieldList.DATABOOK_NUM, true);
+  }
+  
+  isReadOnly(value){ 
+    if(value)
+       return "background-color:white"
+    else
+      return "background-color:#CCC"
+      
+  }
+
+}
+
+
+// retrieve-eln
+<template>
+  <select id="ELN">
+    <option>Choose</option>  
+  </select>
+</template>
+
+// autthors
+<template>
+  <span innerhtml.bind=utility.requiredElementData[title].title></span>
+</template>
+
+import {bindable, bindingMode} from "aurelia-framework";
+
+export class Authors{
+  @bindable title; 
+  @bindable utility; 
+}

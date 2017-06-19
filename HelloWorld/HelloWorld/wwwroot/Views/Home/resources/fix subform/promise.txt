@@ -1,0 +1,113 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<template>
+    <div class="input-group">
+      <span class="input-group-addon">Title</span>
+      <select class="form-control" id="reports" value.bind="selectedReport">
+        <option repeat.for="event of events" model.bind="event">
+            ${event.speaker}
+        </option>
+      </select>
+    </div>
+</template>
+
+import {inject} from 'aurelia-framework';
+import {DataRepository} from "./dataRepository"
+
+@inject(DataRepository)
+export class App {
+    
+    events = [];
+    message;
+    
+    constructor(dataRepository) {
+		    this.dataRepository = dataRepository;
+	  }
+    
+     created(){
+        this.dataRepository.getEvents() 
+          .then(events => {
+            if(events.length ===0)
+              this.message = "search failed";
+            else
+              this.events = events
+          })
+          .catch(error => {
+              this.message = "search failed";
+              console.log("----- error getting user info -------------");
+          });
+    }
+}
+
+// DataRepository ///////////////////////////////////
+import {eventsData} from './eventsData';
+
+export class DataRepository {
+      
+      events = [];
+      
+      getEvents() {
+          var promise = new Promise((resolve, reject) => {
+        				
+        				let timesup = false;
+        				
+          				setTimeout(() => { 
+          						this.events = eventsData;
+          				},5000);
+ 
+          				  
+          			  resolve(this.events);	
+        				},1000);
+
+	  	    });
+	  	
+		      return promise;
+      }
+      
+}
+
+//
+export var eventsData = [
+  {
+    "id": 124,
+    "description": "REST is an architectural style for building HTTP Web API services that is often misunderstood - many people claim to be building RESTful services but do not know the things they need to be doing to truly qualify as a RESTful service. In this session, you will learn the fundamental architectural constraints that define REST and how you can implement those constraints using ASP.NET Web API. You’ll learn what things you need to do to implement the capabilities that all Web API services should do, such as focus on resources, representations, URIs, content-negotiation, HTTP verbs and headers and so on, as well as the concept of hypermedia and how it pertains to RESTful services.",
+    "dateTime": "2013-02-26T23:30:00.000Z",
+    "title": "Designing RESTful Services with ASP.NET Web API",
+    "speaker": "Brian Noyes",
+    "image": "BrianNoyes.png"
+  },
+  {
+    "id": 131,
+    "description": "When modeling your data for an enterprise web application, you may have conflicts within your development team, with other development teams, and also with enterprise architects at your organization. With Code First Migrations, you will have the opportunity to get everyone on the same page by synchronizing your database across various environments.",
+    "dateTime": "2013-08-27T22:30:00.000Z",
+    "title": "Entity Framework Code First Migrations - Shahed Chowdhuri",
+    "speaker": "Shahed Chowdhuri",
+    "image": "ShahedChowdhuri.jpg"
+  },
+  {
+    "id": 149,
+    "description": "The talk discusses the up-and-coming Web Components standards, how they improve web development, how Polymer can help you develop using Web Components today, and whether Web Components enhance (or replace) your favorite web framework.",
+    "dateTime": "2015-01-27T23:30:00.000Z",
+    "title": "Web Components and Polymer - An Introduction to the Future of Web Applications - Steve Albers",
+    "speaker": "Steve Albers",
+    "image": "SteveAlbers.jpg"
+  },
+  {
+    "id": 151,
+    "description": "Does your web application contain common coding mistakes that can lead to security problems? In this session, you can find out! We'll be going over common security vulnerabilities in web applications, such as XSS and CSRF, how attackers use them, and how to protect your web application from these. ",
+    "dateTime": "2014-12-16T23:30:00.000Z",
+    "title": "Web Application Security - Kevin Jones (MVP)",
+    "speaker": "Kevin Jones",
+    "image": "KevinJones.png"
+  },
+  {
+    "id": 125,
+    "description": "When you build a business application, there are a different set of concerns that come in that go beyond quickly throwing together an application and getting it in the marketplace. You need to think more about how to build the application in a way that is maintainable, testable, and easy to evolve over time to suit the business needs. Microsoft patterns and practices has put together guidance on how to do this that you can leverage, called Project Kona. In this session, you will learn straight from a Kona team member what the Kona guidance includes and how to leverage it in your own projects. You'll learn how to set up your application to do MVVM, navigation, and state persistence while still integrating nicely with the WinRT platform and keeping good separating of concerns and loose coupling. You'll see how to manage dependencies, call Web API services, integrate with platform features like Settings charm flyouts, Search, and more.",
+    "dateTime": "2013-02-26T23:30:00.000Z",
+    "title": "Building Windows Store Line of Business Applications with Kona - Brian Noyes (RD/MVP)",
+    "speaker": "Brian Noyes",
+    "image": "BrianNoyes.png"
+  }
+]
