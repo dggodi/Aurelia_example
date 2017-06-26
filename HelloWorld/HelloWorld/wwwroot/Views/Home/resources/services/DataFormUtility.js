@@ -1,76 +1,181 @@
 ﻿import { transient } from 'aurelia-framework';
 
-export var RequiredFieldList = {
-    TITLE: 0,
-    ABSTRACT: 1,
-    AUTHOR: 2,
-    FINAL_REVIEWER: 3,
-    REPORT_NUM: 4,
-    LTD: 5,
-    EXPORT_CONTROL: 6,
-    NON_AUTHOR: 7,
-    DATABOOK_NUM: 8
+export var FieldList = {
+    BUSINESS: 0,
+    FINAL_REVIEWER: 1,
+    ELN: 2,
+    EXPORT_CONTROL: 3,
+    DATABOOK_NUM: 4,
+    REPORT_NUM: 5,
+    REPORT_DATE: 6,
+    LTD: 7,
+    LTD_REASON: 8,
+    TITLE: 9,
+    AUTHOR: 10,
+    NON_AUTHOR: 11,
+    ABSTRACT: 12,
+    DISTRIBUTION_LIST: 13
 };
 
-let RequiredElementData = [
-    { key: "TITLE", title: "Title", error: "A Report Title is requried", success: true, required: true },
-    { key: "ABSTRACT", title: "Report Abstract", error: "A Report Abstract is requried", success: true, required: true },
-    { key: "AUTHOR", title: "Dow Author", error: "A Dow Author is requried", success: true, required: true },
-    { key: "FINAL_REVIEWER", title: "Business / Capability", error: "A Final Reviewer is requried", success: true, required: true },
-    { key: "REPORT_NUM", title: "Report Number", error: "A Report Number is requried", success: true, required: true },
-    { key: "LTD", title: "Limited Distribution", error: "Limited Distribution is requried", success: true, required: true },
-    { key: "EXPORT_CONTROL", title: "Export Control", error: "Export Control is requried", success: true, required: true },
-    { key: "NON_AUTHOR", title: "Non Dow Author", error: "Dow Author", success: true, required: true },
-    { key: "DATABOOK_NUM", title: "Data Book Number", error: "Data Book NUmber has incorrect format", success: true, required: true }
+export var ReportTypes = {
+    CRI: 0,
+    PROJECT_LEARNING: 1,
+    TECH_LEARNING: 2
+}
+
+let ElementData = [
+    { title: "Business / Capability", id: "business", key: "BUSINESS", success: true, required: true, none: false, flow:false},
+    { title: "Final Reviewer", id: "finalReviewer", key: "FINAL_REVIEWER", success: true, required: true, none: false, flow: false },
+    { title: "ELN Project", id: "ELN", key: "ELN", success: true, required: true, none: true, flow: false },
+    { title: "Export Control", id: "exportControl", key: "EXPORT_CONTROL", success: true, required: true, none: false, flow: false },
+    { title: "Databook Number", id: "databookNumber", key: "DATABOOK_NUM", success: true, required: true, none: false, flow: false },
+    { title: "Report Number", id: "reportNumber", key: "REPORT_NUM", success: true, required: true, none: false, flow: false },
+    { title: "Report Date", id: "reportDate", key: "REPORT_DATE", success: true, required: true, none: false, flow: false },
+    { title: "LTD Limited Distribution", id: "LTD", key: "LTD", success: true, required: true, none: false, flow: false },
+    { title: "LTD Limited Distribution Reason", id: "ltdReason", key: "LTD_RESAON", success: true, required: true, none: false, flow: false },
+    { title: "Report Title", id: "title", key: "TITLE", success: true, required: true, none: false, flow: false },
+    { title: "Dow Author", id: "dowAuthors", key: "AUTHOR", success: true, required: true, none: false, flow: false },
+    { title: "Non Dow Author", id: "nonDowAuthors", key: "NON_AUTHOR", success: true, required: true, none: false, flow: false },
+    { title: "Report Abstract", id: "abstract", key: "ABSTRACT", success: true, required: true, none: false, flow: false },
+    { title: "Distribution List", id: "diList", key: "DI_LIST", success: true, required: true, none: false, flow: false }
 ];
+
+let reportType = "";
+
+class ReportType {
+    constructor(data) {
+        this.reportType = data.reportType;
+        this.business = data.business;
+        this.finalReviewer = data.finalReviewer;
+        this.reportDate = data.reportDate;
+        this.reportTitle = data.reportTitle;
+        this.dowAuthor = data.dowAuthor;
+        this.nonDowAuthor = data.nonDowAuthor;
+        this.reportAbstract = data.reportAbstract;
+        this.distributionList = data.distributionList;
+    }
+}
+
+class CRI extends ReportType {
+    constructor(data) {
+        super(data);
+        this.eln = data.eln;
+        this.exportControlled = data.exportControlled;
+        this.databookNumber = data.databookNumber;
+        this.reportNumber = data.reportNumber;
+        this.ltd = data.ltd;
+        this.ltdReason = data.ltdReason;
+    }
+}
+
+class ProjectLearning extends ReportType {
+    constructor(data) {
+        super(data);
+        this.exportControlled = data.exportControlled;
+    }
+}
+
+
+class TechnicalMeeting extends ReportType {
+    constructor(data) {
+        super(data);
+    }
+}
 
 
 @transient()
-export class FormDataUtility {
-
-    reset= false;
+export class DataFormUtility {
 
     constructor() {
-        this.requiredElementData = RequiredElementData;
+        this.elementData = ElementData;
     }
 
-    get reset() {
-        return this.clearForm;
+    getID(obj) {
+        this.elementData[obj].id;
     }
 
-    set reset(value) {
-        this.clearForm = value;
+    getElementData() {
+        return this.elementData;
     }
 
-    getRequiredElementData() {
-        return this.requiredElementData;
+    getFlow(obj) {
+        return this.elementData[obj].flow;
     }
 
-    setSuccess(obj, value) {
-        this.requiredElementData[obj].success = value;
-        return this.requiredElementData[obj].success
+    getNone(obj) {
+        return this.elementData[obj].none;
     }
 
-    setRequired(obj, value) {
-        this.requiredElementData[obj].required = value;
-        return this.requiredElementData[obj].required;
-    }
-
-    getSuccess(obj) {
-        return this.requiredElementData[obj].success;
+    getReportType() {
+        return reportType;
     }
 
     getRequired(obj) {
-        return this.requiredElementData[obj].required;
+        return this.elementData[obj].required;
+    }
+
+    getSuccess(obj) {
+        return this.elementData[obj].success;
+    }
+
+    getTitle(obj) {
+        return this.elementData[obj].title;
+    }
+
+    setNone(obj, value) {
+        this.elementData[obj].none = value;
+    }
+
+    setFlow(obj, value) {
+        this.elementData[obj].flow = value;
+    }
+
+    setReportType(report) {
+        reportType = report;
+    }
+
+    setSuccess(obj, value) {
+        this.elementData[obj].success = value;
+        return this.elementData[obj].success
+    }
+
+    setRequired(obj, value) {
+        this.elementData[obj].required = value;
+        return this.elementData[obj].required;
+    }
+
+    reset() {
+        for (let i in FieldList) {
+            this.setRequired(FieldList[i], true);
+            this.setSuccess(FieldList[i], true);
+            this.setNone(FieldList[i], false);
+            this.setFlow(FieldList[i], false);
+        }
+
+    }
+
+    resetForm() {
+        for (let i in FieldList) {
+            this.setRequired(FieldList[i], true);
+            this.setSuccess(FieldList[i], true);
+            this.setFlow(FieldList[i], false);
+        }
+
     }
 }
 
 export class ValidateForm {
     static isEmpty(str) {
-        return (!!str);
+        return (!str);
     }
 
     static isEmptyContainer(obj) {
-        return (typeof obj != "undefined" && obj != null && obj.length > 0)
+        return obj.length == 0;
+    }
+
+    static isDataBookNumber(obj){
+        return obj.match(/^\d{9}$/);
     }
 }
+
+

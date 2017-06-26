@@ -1,0 +1,14 @@
+﻿<template>
+    <div class="form-group">
+        <h3>
+            <label for="reports">Submission Form &nbsp;&nbsp;&nbsp;</label>
+            <select class="form-control" id="reports" value.bind="selectedReport" change.delegate="changeReportCurrentBrowsers($event)">
+                <option model.bind="null">Choose A Report Type</option>
+                <option disable>-------------------------</option>
+                <option repeat.for="reportSelection of reportSelections" model.bind="reportSelection" click.delegate="changeReportIE(reportSelection)">
+                    ${reportSelection.name}
+                </option>
+            </select>
+        </h3>
+    </div>
+</template>

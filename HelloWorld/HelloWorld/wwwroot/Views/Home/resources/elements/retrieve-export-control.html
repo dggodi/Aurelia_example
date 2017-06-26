@@ -1,0 +1,16 @@
+﻿<template>
+    <div class="input-group line-spacing">
+        <span class="input-group-addon" css.bind="success">
+            Export Control Status
+            <span if.bind="ctrl[fields.EXPORT_CONTROL].required" class="error">*</span>
+        </span>
+        <select id="exportControl" class="form-control" value.bind="exportStatus" change.delegate="changeStatusCurrentBrowsers($event)">
+            <option model.bind="null">Choose</option>
+            <option model.bind="null" disabled></option>
+            <option repeat.for="exportControl of exportControls" value.bind="exportControl" click.delegate="changeStatusIE()">
+                ${exportControl}
+            </option>
+        </select>
+    </div>
+</template>
+

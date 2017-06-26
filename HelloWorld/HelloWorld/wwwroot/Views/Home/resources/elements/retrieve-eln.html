@@ -1,0 +1,15 @@
+﻿<template>
+    <div class="input-group line-spacing">
+        <span class="input-group-addon">
+            ELN Project
+            <i class='fa fa-spin fa-spinner' if.bind="loadingSpinner"></i>
+        </span>
+        <select id="ELN" class="form-control" value.bind="ELNProject" change.delegate="changeELNCurrentBrowsers($event)">
+            <option model.bind="null">Select ELN Project</option>
+            <option model.bind="null" disabled></option>
+            <option repeat.for="elnProject of elnProjects" model.bind="elnProject" click.delegate="changeELNIE()">
+                ${elnProject.ProjectName}
+            </option>
+        </select>
+    </div>
+</template>

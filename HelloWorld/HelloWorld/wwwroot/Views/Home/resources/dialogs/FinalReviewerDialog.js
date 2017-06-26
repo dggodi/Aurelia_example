@@ -3,7 +3,7 @@ import { DialogController } from 'aurelia-dialog';
 import { UserData } from "../services/userData"
 import { FinalReviewerData } from "../services/finalReviewerData";
 import { HashSet } from "../services/hashSet"
-import { RequiredFieldList} from "../services/dataFormUtility" 
+import { FieldList, ReportTypes} from "../services/dataFormUtility"
 
 /**
  * convert final reviwer object values into a string
@@ -72,8 +72,8 @@ export class FinalReviewerDialog {
      *  populates select with final reviewers retreived from db
      */
     created() {
-        for (var business in this.data.selectedBusinessCapabilities) {
-            var tmp = this.data.selectedBusinessCapabilities[business];
+        for (var business in this.data.selectedbusinesses) {
+            var tmp = this.data.selectedbusinesses[business];
             this.finalReviewerData.getByBusiness(tmp)
                 .then(users => this.populateUserData(users))
                 .catch(error => {
@@ -105,13 +105,38 @@ export class FinalReviewerDialog {
         }
     }
 
+    setFormFlow() {
+
+        this.data.utility.setFlow(FieldList.FINAL_REVIEWER, true);
+
+        switch (this.data.utility.getReportType()) {
+            case ReportTypes.CRI:               
+                this.data.utility.setFlow(FieldList.ELN, true);
+                break;
+
+            case ReportTypes.PROJECT_LEARNING:
+                this.data.utility.setFlow(FieldList.EXPORT_CONTROL, true);
+                console.log("setFormFlow  CRI" + this.data.utility.getFlow(FieldList.ELN));
+                console.log("setFormFlow  PROJECT_LEARNING" + this.data.utility.getFlow(FieldList.EXPORT_CONTROL));
+
+                break;
+
+            case ReportTypes.TECH_LEARNING:
+                this.data.utility.setFlow(FieldList.REPORT_DATE, true);
+                break;
+        }
+    }
+
     /**
      * returns back to the caller after the values of the final reviewer object is
      * assigned to reviewer stored in the caller
      */
     ok() {
         this.data.reviewer = convertObjectToString(this.selectedFinalReviewer);
-        this.data.utility.setSuccess(RequiredFieldList.FINAL_REVIEWER, true);
+        this.data.utility.setSuccess(FieldList.FINAL_REVIEWER, true);
+        this.data.utility.setSuccess(FieldList.BUSINESS, true);
+        this.setFormFlow();
+        
         this.controller.ok();
     }
 
@@ -119,7 +144,7 @@ export class FinalReviewerDialog {
      * return back to the caller
      */
     cancel() {
-        this.data.utility.setSuccess(RequiredFieldList.FINAL_REVIEWER, false);
+        this.data.utility.setSuccess(FieldList.FINAL_REVIEWER, false);
         this.controller.cancel()
     }
 

@@ -1,10 +1,11 @@
 ﻿import { inject, bindable, bindingMode } from "aurelia-framework";
 import { DialogService } from 'aurelia-dialog';
-import { FinalReviewerData } from "../services/finalReviewerData";
-import { HashSet } from "../services/hashSet"
 import { FinalReviewerDialog } from "../dialogs/FinalReviewerDialog"
+import { FinalReviewerData } from "../services/finalReviewerData";
+import { FieldList, ValidateForm } from "../services/dataFormUtility"
+import { HashSet } from "../services/hashSet"
 import { CSSUtility } from "../services/CSSUtility"
-import { RequiredFieldList, ValidateForm } from "../services/dataFormUtility"
+
 /**
  * program purpose:
  * - Retreive business capabilities from database to populate select element.
@@ -16,7 +17,7 @@ import { RequiredFieldList, ValidateForm } from "../services/dataFormUtility"
  * - dialogService                  - modal service
  * - element                        - ref to the custom element in the view
  * - parent                         - this ref to RetrieveAuthors
- * - selectedBusinessCapabilities   - container for selected Business / Capabilities
+ * - selectedbusinesses   - container for selected Business / Capabilities
  * - set                            - hashset of authors
  */
 @inject(DialogService, FinalReviewerData, HashSet, Element)
@@ -26,8 +27,9 @@ export class RetrieveBusinesses {
     @bindable utility;
     @bindable success;
 
-    businessCapabilities = [];
-    @bindable({ defaultBindingMode: bindingMode.twoWay }) selectedBusinessCapabilities = [];
+    businessCapabilities = []
+    @bindable({ defaultBindingMode: bindingMode.twoWay }) selectedbusinesses;
+
     parent;
     select2 = null;
 
@@ -71,19 +73,27 @@ export class RetrieveBusinesses {
      */
     attached() {
         this.select2 = $(this.element).find('select').select2({
-            placeholder: "No selection",
+            placeholder: "Select one or multiple Businesses",
             allowClear: true
         });
         // add event listener to select element
-        this.select2.val(this.selectedBusinessCapabilities).trigger("change");
+        this.select2.val(this.selectedbusinesses).trigger("change");
         // if any value in the select is changed add new value to the business / capabilites container
         this.select2.on('change', (e) => {
             let temp = this.getMultiValues();
-            if (ValidateForm.isEmptyContainer(temp) == false)
-                this.utility.setSuccess(RequiredFieldList.FINAL_REVIEWER, false);
 
-            this.selectedBusinessCapabilities = temp;
+            if (ValidateForm.isEmptyContainer(temp)) {
+                this.resetReviewer();
+            }
+
+            this.selectedbusinesses = temp;
         });
+    }
+
+    resetReviewer() {
+        this.utility.setSuccess(FieldList.BUSINESS, false);
+        this.utility.setSuccess(FieldList.FINAL_REVIEWER, false);
+        this.reviewer = "";
     }
 
     /**
@@ -123,11 +133,14 @@ export class RetrieveBusinesses {
      * note if the service fails clear the data being sent
      */
     openModal() {
-        this.dialogService.open({ viewModel: FinalReviewerDialog, model: this.parent })
-            .then(response => {
-                if (response.wasCancelled) {
-                    this.reviewer = "";
-                }
-            });
-    }
+
+        if (!(ValidateForm.isEmptyContainer(this.selectedbusinesses))) {       
+            this.dialogService.open({ viewModel: FinalReviewerDialog, model: this.parent })
+                .then(response => {
+                    if (response.wasCancelled) {
+                        this.reviewer = "";
+                    }
+                });
+            }
+        }
 }

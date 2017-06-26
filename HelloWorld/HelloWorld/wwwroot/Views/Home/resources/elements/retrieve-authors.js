@@ -3,7 +3,7 @@ import { inject, bindable, bindingMode } from 'aurelia-framework';
 import { AuthorDialog } from '../dialogs/authors-dialog';
 import { HashMap } from "../services/hashMap"
 import { CSSUtility } from "../services/CSSUtility"
-import { RequiredFieldList, ValidateForm} from "../services/dataFormUtility"
+import { RequiredFieldList, ValidateForm } from "../services/dataFormUtility"
  
 /**
  * program purpose:
@@ -87,6 +87,7 @@ export class RetrieveAuthors {
 
     errorSuccess(value) {
         this.utility.setSuccess(RequiredFieldList.AUTHOR, value);
+        console.log(value);
     }
 
     

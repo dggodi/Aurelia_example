@@ -1,12 +1,11 @@
-﻿let ErrorFieldCSS = { originalBG: "#eee", originalColor: "#555", errorBG: "#f00", errorColor: "#fff" }
-
-export class CSSUtility {
+﻿export class CSSUtility {
 
     static isValidFieldSuccess() {
-        return "background-color:" + ErrorFieldCSS.originalBG + "; color:" + ErrorFieldCSS.originalColor;
+        return "background-color:#eee; color:#555";
     }
 
     static isValidFieldError() {
-        return "background-color:" + ErrorFieldCSS.errorBG + "; color:" + ErrorFieldCSS.errorColor;
+        return "background-color:#f00; color:#fff";
     }
-}  
+}
+  

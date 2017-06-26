@@ -17,7 +17,7 @@
                         
                         <label class="col-sm-2 control-label">Name</label>
                         <div class="col-sm-10">
-                              <input type="text" placeholder="Name" class="form-control" value.bind="data.dowName & debounce:850" />
+                              <input type="text" placeholder="Name" class="form-control" value.bind="name & debounce:850" />
                         </div>
                     </div>
                     <div class="form-group" id="user-space">
@@ -25,9 +25,9 @@
                             <span class='fa fa-spin fa-spinner fa-2x' style='margin: 0 auto' if.bind="loadingSpinner"></span>
                         </label>
                         <div class="col-sm-10">
-                            <select class="col-xs-12" value.bind="selectedAuthor" size="10" multiple>
+                            <select class="col-xs-12" value.bind="selectedAuthor" change.delegate="add($event)" size="10" multiple>
                                 <option model.bind="null"></option>
-                                <option repeat.for="author of authors" model.two-way="author & throttle:250" click.delegate="add(author)">
+                                <option repeat.for="author of authors" model.bind="author & throttle:250" click.delegate="add(author)">
                                     ${author.LastName}, ${author.FirstName} - ${author.DowId}
                                 </option>
                             </select>

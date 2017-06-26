@@ -11,7 +11,7 @@ import { ValidateForm, RequiredFieldList} from "../services/DataFormUtility"
  * - then cancel or continue the current operation.
  *
  * two-way binded dictionary
- * - dowName                        - value bound to view
+ * - name                        - value bound to view
  *
  * local dictionary
  * - authors        - temp container for populating authors in select
@@ -26,7 +26,7 @@ import { ValidateForm, RequiredFieldList} from "../services/DataFormUtility"
 export class AuthorDialog {
     heading = 'Search for Author';
 
-    @bindable({ defaultBindingMode: bindingMode.twoWay }) dowName;
+    @bindable({ defaultBindingMode: bindingMode.twoWay }) name;
 
     authors = [];
     finalAuthors = [];
@@ -53,12 +53,13 @@ export class AuthorDialog {
      */
     activate(data) {
         this.data = data;
-        this.dowName = data.dowName;
-        
-        if (this.dowName != null){
-            if (this.dowName.length >= 3) {
+        this.name = data.name;
+        this.finalAuthors = data.authors;
+
+        if (this.name != null){
+            if (this.name.length >= 3) {
                 this.loadingSpinner = true;
-                this.search(this.dowName);
+                this.search(this.name);
             }
         }
     }
@@ -71,7 +72,7 @@ export class AuthorDialog {
     created() {
         for (var author in this.data.authors) {
             var tmpAuthor = this.data.authors[author];
-            if (this.data.authorMap.contains(tmpAuthor.DowId) === false) {
+            if (this.data.authorMap.contains(tmpAuthor[DowId]) === false) {
                 this.finalAuthors.push(tmpAuthor);
                 this.data.authorMap.add(tmpAuthor.DowId)
             }
@@ -83,9 +84,9 @@ export class AuthorDialog {
      * @param author - author object added to array
      */
     add(obj) {
-        if (this.data.authorMap.contains(obj.DowId) === false) {
-            this.finalAuthors.push(obj);
-            this.data.authorMap.add(obj.DowId)
+        if (this.data.authorMap.contains(this.selectedAuthor.DowId) === false) {
+            this.finalAuthors.push(this.selectedAuthor);
+            this.data.authorMap.add(this.selectedAuthor.DowId)
         }
     }
 
@@ -108,10 +109,10 @@ export class AuthorDialog {
      * if newValue > 3 call search to retrieve user data
      * @param newValue - DowId or name or user 
      */
-    dowNameChanged(newValue) {
+    nameChanged(newValue) {
         if (newValue.length >= 3) {
             this.loadingSpinner = true;
-            this.search(this.dowName);
+            this.search(this.name);
         }
     }
     
@@ -151,8 +152,8 @@ export class AuthorDialog {
     /**
      * if successful retrieve user data from the userData Service
      */
-    search(dowName) {
-        this.userData.search(dowName)
+    search(name) {
+        this.userData.search(name)
             .then(authors => {
                 var result = authors;
                 if (result === false)

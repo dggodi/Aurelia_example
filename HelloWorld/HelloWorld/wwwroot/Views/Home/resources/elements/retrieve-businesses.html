@@ -1,10 +1,10 @@
-﻿<template bindable="finalReviewer">
+﻿<template>
     <div class="input-group">
         <span class="input-group-addon" css.bind="isError(success)">Business / Capabilites
-            <span class="error" bind.show="required">*</span>
+            <span class="error" show.bind="required">*</span>
             <i class='fa fa-spin fa-spinner' style='margin: 0 auto' if.bind="loadingSpinner"></i>
         </span>
-        <select multiple class="form-control" value.bind="selectedBusinessCapabilities" style="width: 100%">
+        <select id="business" multiple class="form-control" value.bind="selectedBusinessCapabilities" style="width: 100%">
             <option repeat.for="businessCapability of businessCapabilities" value.bind="businessCapability">
                 ${businessCapability}
             </option>
@@ -13,5 +13,6 @@
             <button type="button" class="btn btn-primary btn-block"  click.trigger="openModal()">Add Final Reviewer</button>
         </span>
     </div>
+    
     
 </template>
