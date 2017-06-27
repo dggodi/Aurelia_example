@@ -40,7 +40,7 @@ let ElementData = [
     { title: "Distribution List", id: "diList", key: "DI_LIST", success: true, required: true, none: false, flow: false }
 ];
 
-let reportType = "";
+
 
 class ReportType {
     constructor(data) {
@@ -86,8 +86,12 @@ class TechnicalMeeting extends ReportType {
 @transient()
 export class DataFormUtility {
 
+    elementData;
+    reportType;
+
     constructor() {
         this.elementData = ElementData;
+        this.reportType = "";
     }
 
     getID(obj) {
@@ -107,7 +111,7 @@ export class DataFormUtility {
     }
 
     getReportType() {
-        return reportType;
+        return this.reportType;
     }
 
     getRequired(obj) {
@@ -131,7 +135,7 @@ export class DataFormUtility {
     }
 
     setReportType(report) {
-        reportType = report;
+        this.reportType = report;
     }
 
     setSuccess(obj, value) {

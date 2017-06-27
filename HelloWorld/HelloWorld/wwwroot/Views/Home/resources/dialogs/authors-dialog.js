@@ -2,7 +2,7 @@
 import { DialogController } from 'aurelia-dialog';
 import { UserData } from "../services/userData"
 import { DataObjectUtility } from "../services/dataUtility"
-import { ValidateForm, RequiredFieldList} from "../services/DataFormUtility" 
+import { ValidateForm, FieldList} from "../services/DataFormUtility" 
 /**
  * program purpose:
  * - Modal service used to search by name or DowId and retreive dow authors from active directory and
@@ -29,7 +29,7 @@ export class AuthorDialog {
     @bindable({ defaultBindingMode: bindingMode.twoWay }) name;
 
     authors = [];
-    finalAuthors = [];
+    
 
     selectedAuthor; 
     data;
@@ -45,6 +45,7 @@ export class AuthorDialog {
         this.userData = userData;
         this.loadingSpinner = false;
         controller.settings.centerHorizontalOnly = true;
+        this.finalAuthors = [];
     }
 
     /**
@@ -72,21 +73,31 @@ export class AuthorDialog {
     created() {
         for (var author in this.data.authors) {
             var tmpAuthor = this.data.authors[author];
-            if (this.data.authorMap.contains(tmpAuthor[DowId]) === false) {
+            if (this.data.authorMap.contains(tmpAuthor.DowId) === false) {
                 this.finalAuthors.push(tmpAuthor);
                 this.data.authorMap.add(tmpAuthor.DowId)
             }
         }
     }
 
+    addIE(author) {
+        this.add(this.selectedAuthor);
+    }
+
+    addAllBrowsers(event) {
+        this.add(this.selectedAuthor);
+    }
+
     /**
      * add selected authors to an array 
      * @param author - author object added to array
      */
-    add(obj) {
-        if (this.data.authorMap.contains(this.selectedAuthor.DowId) === false) {
-            this.finalAuthors.push(this.selectedAuthor);
-            this.data.authorMap.add(this.selectedAuthor.DowId)
+    add(author) {
+        if (author != null) {
+            if (this.data.authorMap.contains(author.DowId) === false) {
+                this.finalAuthors.push(author);
+                this.data.authorMap.add(author.DowId)
+            }
         }
     }
 
@@ -122,7 +133,8 @@ export class AuthorDialog {
      */
     submit() {
         this.data.authors = this.finalAuthors;
-        this.data.utility.setSuccess(RequiredFieldList.AUTHOR, true);
+        this.data.utility.setSuccess(FieldList.AUTHOR, true);
+        this.data.utility.setFlow(FieldList.ABSTRACT, true);
         this.controller.ok();
     }
 
@@ -145,8 +157,10 @@ export class AuthorDialog {
     }
 
     resetSuccessOfField(data) {
-        if (ValidateForm.isEmptyContainer(data) == false)
-            this.data.utility.setSuccess(RequiredFieldList.AUTHOR, false);
+        if (ValidateForm.isEmptyContainer(data) == false) {
+            this.data.utility.setSuccess(FieldList.AUTHOR, false);
+            this.data.utility.setFlow(FieldList.ABSTRACT, false);
+        }
     }
 
     /**
@@ -155,11 +169,10 @@ export class AuthorDialog {
     search(name) {
         this.userData.search(name)
             .then(authors => {
-                var result = authors;
-                if (result === false)
+                if (authors.length == 0)
                     alert("timout");
-                else
-                    this.authors = authors;
+
+                this.authors = authors;
 
                 this.loadingSpinner = false;
             })

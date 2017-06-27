@@ -11,8 +11,9 @@
     </div>
     <div id="user-space">
         <div repeat.for="author of authors">
-            ${author.LastName}, ${author.FirstName} - ${author.DowId}
-            <button type="button" class="btn btn-primary btn-xs pull-right" click.delegate="remove(author)">-</button>
+            <button type="button" class="btn btn-default btn-xs btn-close" style="border:none" click.delegate="remove(author)">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>${author.LastName}, ${author.FirstName} - ${author.DowId}
         </div>
     </div>
 </template>

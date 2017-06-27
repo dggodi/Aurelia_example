@@ -1,5 +1,6 @@
 ﻿import { inject, bindable, bindingMode } from 'aurelia-framework';
 import { HashSet } from "../services/hashset";
+import { ValidateForm, FieldList } from "../services/DataFormUtility" 
 //import { NonDowAuthor } from "../models/person"
 
 /**
@@ -85,18 +86,25 @@ export class RetrieveNonDowAuthors {
      * to and stored in the author container where each naem is sperated by a ";"
      */
     add() {
-        if (isValid(this.name) === false)
+        if (isValid(this.name) === false) {
             this.displayError("Error... Incorrect format");
-        else { 
+            this.utility.setSuccess(FieldList.NON_AUTHOR, false);
+            this.utility.setFlow(FieldList.ABSTRACT, false);
+        } else { 
             var tmpname = "" + formatName(this.name)
 
-            if (this.set.contains(tmpname) === true)
+            if (this.set.contains(tmpname) === true) {
                 this.displayError("Error... Duplicate author");
-            else {
+                this.utility.setSuccess(FieldList.NON_AUTHOR, false);
+                this.utility.setFlow(FieldList.ABSTRACT, false);
+            }else {
                 this.displayError("");
                 this.finalAuthors.push(tmpname);
                 this.set.add(tmpname);
+
                 this.authors = this.authors + tmpname + ";"
+                this.utility.setSuccess(FieldList.NON_AUTHOR, true);
+                this.utility.setFlow(FieldList.ABSTRACT, true);
             }
         }
     }

@@ -1,0 +1,15 @@
+﻿<template>
+    <div class="input-group" style="margin-left:-11px">
+        <span class="input-group-addon" style="background-color:white; border:none; margin-left:-10px; width:210px">
+            <input type="checkbox" checked.bind="LTDChecked">&nbsp;Limited Distribution<span if.bind="required" class="error">*</span>
+        </span>
+        <span id="LTD" if.bind="LTDChecked" css.bind="success" class="input-group-addon">LTD Reason<span if.bind="required" class="error">*</span></span>
+        <select if.bind="LTDChecked" class="form-control" value.bind="selectedBusinessLTDOption" change.delegate="changeLTDCurrentBrowsers($event)">
+            <option value.bind="null">Select One</option>
+            <option disabled></option>
+            <option repeat.for="LTDOption of LTDOptions" value.bind="LTDOption" click.delegate="changeLTDIE()">
+                ${LTDOption}
+            </option>
+        </select>
+    </div>
+</template>

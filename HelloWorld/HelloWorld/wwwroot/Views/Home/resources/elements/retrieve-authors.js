@@ -3,7 +3,7 @@ import { inject, bindable, bindingMode } from 'aurelia-framework';
 import { AuthorDialog } from '../dialogs/authors-dialog';
 import { HashMap } from "../services/hashMap"
 import { CSSUtility } from "../services/CSSUtility"
-import { RequiredFieldList, ValidateForm } from "../services/dataFormUtility"
+import { FieldList, ValidateForm } from "../services/dataFormUtility"
  
 /**
  * program purpose:
@@ -52,13 +52,10 @@ export class RetrieveAuthors {
     }
 
     nameChanged(newValue) {
-        if (ValidateForm.isEmptyContainer(this.authors)) {
-            this.errorSuccess(true);
+        if (ValidateForm.isEmpty(newValue)) 
             this.addAuthor = "Edit"
-        } else {
-            this.errorSuccess(false);
+         else 
             this.addAuthor = "Search"
-        }
     }
 
     /**
@@ -86,7 +83,7 @@ export class RetrieveAuthors {
     
 
     errorSuccess(value) {
-        this.utility.setSuccess(RequiredFieldList.AUTHOR, value);
+        this.utility.setSuccess(FieldList.AUTHOR, value);
         console.log(value);
     }
 

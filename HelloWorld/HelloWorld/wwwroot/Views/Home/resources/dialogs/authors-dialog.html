@@ -25,9 +25,9 @@
                             <span class='fa fa-spin fa-spinner fa-2x' style='margin: 0 auto' if.bind="loadingSpinner"></span>
                         </label>
                         <div class="col-sm-10">
-                            <select class="col-xs-12" value.bind="selectedAuthor" change.delegate="add($event)" size="10" multiple>
+                            <select class="col-xs-12" value.bind="selectedAuthor" change.delegate="addAllBrowsers($event)" size="10" multiple>
                                 <option model.bind="null"></option>
-                                <option repeat.for="author of authors" model.bind="author & throttle:250" click.delegate="add(author)">
+                                <option repeat.for="author of authors" model.bind="author" click.delegate="addIE(author)">
                                     ${author.LastName}, ${author.FirstName} - ${author.DowId}
                                 </option>
                             </select>

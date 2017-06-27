@@ -31,18 +31,20 @@ export class RetrieveEln {
             if (ELN.status === "yes") {
                 this.utility.setFlow(FieldList.DATABOOK_NUM, false);
                 this.utility.setFlow(FieldList.REPORT_NUM, true);
-                $("#exportControlled").prop('disabled', 'disabled');
+                $("#exportControl").prop('disabled', 'disabled');
+                $("#exportControl").val("Yes");
             }
             else if (ELN.status === "no") {
                 this.utility.setFlow(FieldList.DATABOOK_NUM, false);
                 this.utility.setFlow(FieldList.REPORT_NUM, false);
-                $('#exportControlled').removeAttr('disabled');
+                $("#exportControl").prop('disabled', 'disabled');
+                $("#exportControl").val("No");
             }
             else {
                 if ($('#ELN option:selected').val() === "none") {
                     this.utility.setFlow(FieldList.DATABOOK_NUM, true);
                     this.utility.setFlow(FieldList.REPORT_NUM, false);
-                    $('#exportControlled').removeAttr('disabled');
+                    $('#exportControl').removeAttr('disabled');
                 }
             }
             this.utility.setFlow(FieldList.EXPORT_CONTROL, true);
