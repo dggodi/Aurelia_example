@@ -1,0 +1,108 @@
+<template>
+  <require from="./test"></require>
+  <test index.bind="fields.A" utility.bind="dataUtility"></test>
+  <br>
+  <test index.bind="fields.B" utility.bind="dataUtility"></test>
+</template>
+
+
+import {bindable, bindingMode} from "aurelia-framework";
+
+let Fields = {
+  A:0,
+  B:1
+}
+
+let Ctrl = [
+    {title: "Authors", id: "a", key: "A", success: true},
+    {title: "Di List", id: "b", key: "B", success: true}
+  ]
+  
+class DataUtility{
+   
+   ctrl;
+   
+   constructor (){
+      this.ctrl = Ctrl;
+   }
+   
+   getCtrl(){
+     return this.ctrl; 
+   }
+   
+   getSuccess(key){
+     return Ctrl[key].success;
+   }
+   
+   getId(key){
+     conosle.log("getId");
+     return Ctrl[key].id;
+   }
+   
+   
+   getTitle(key){
+     console.log("getTitle");
+     return Ctrl[key].title;
+   }
+}
+
+export class App {
+  
+  @bindable dataUtility = new DataUtility();
+  fields = Fields;
+  
+  constructor() {
+    
+  }
+  
+  attached(){
+    console.log("App :: " + this.dataUtility.getTitle(0));
+  }
+}
+
+
+<template>
+  <label>${title}</label>
+  <!--<input id=${ctrl[index].id} />
+  ${ctrl[index].key}-->
+</template>
+
+
+import {bindable} from "aurelia-framework"
+
+let Ctrl = [
+    {title: "Authors", id: "a", key: "A", success: true},
+    {title: "Di List", id: "b", key: "B", success: true}
+  ]
+export class Test{
+  @bindable index
+  
+  constructor(){
+    this.ctrl = Ctrl;
+    this.id = this.ctrl[0].id
+  }
+}
+
+import {bindable, bindingMode} from "aurelia-framework";
+
+let Ctrl = [
+    {title: "Authors", id: "a", key: "A", success: true},
+    {title: "Di List", id: "b", key: "B", success: true}
+  ]
+  
+export class Test{
+  @bindable index;
+  @bindable utility;
+  
+  constructor(){
+    //this.ctrl = Ctrl;
+    //this.id = this.ctrl[0].id
+   
+  }
+  
+  attached(){
+     console.log("Test " + this.index + "  " + this.utility);
+    this.title = this.utility.getTitle(this.index); 
+    this.id = this.utility.getId(this.index); 
+  }
+}
