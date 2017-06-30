@@ -1,3 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">[]
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+.input-group-addon {min-width:200px; text-align:left;}
+.line-spacing {margin-bottom:20px}
+.lg-line-seperation {margin-bottom:40px}
+.btn-clear {background-color:#999; border-color:#333}
+.btn-clear:hover {background-color:#000; border-color:#fff}
+.btn {padding-left:20px; padding-right:20px}
+
+.file-upload-container{border-top: 1px solid gray}
+
+ul {list-style-type: none;}
+li {float:left;}
+.btn-xs{margin:5px 2px 5px 10px; padding: 1px 1px; border:none}
+.btn-close {color:red}
+.btn-default-close {background-color:#555; color:white}
+.btn-primary-close {background-color:transparent; color:#337ab7}
+
+.ltd-radio {padding: 0px 5px}
+
+</style>
+</head>
+<body>
+
+  	<section class="container form-inline line-spacing">
+		<div class="form-group">
+			<h3>
+			<label for="reports">Submission Form &nbsp;&nbsp;&nbsp;</label>
+			<select class="form-control" id="reports" value.bind="selectedReport" change.delegate="changeReportCurrentBrowsers($event)">
+				<option model.bind="null">Choose A Report Type</option>
+				<option model.bind="null" disabled></option>
+				<option repeat.for="reportSelection of reportSelections" model.bind="reportSelection" click.delegate="changeReport(reportSelection)">
+					${reportSelection.name}
+				</option>
+			</select>
+			</h3>
+		</div>
+	</section>
+	
+	<section show.bind="showReport" class="container">
+		<div class="row">
+			<div class="col-sm-12 col-xs-12">
+				<div class="panel panel-default">
+					<div class="panel-heading clearfix line-spacing">
+						<h3 class="panel-title">General Information</h3>
+					</div>
+					<div class="panel-body">
+						
+						<div class="row">
+							<div class="col-sm-12 line-spacing"> 
+								<p><label><span class="error">*</span> Indicates required field</label></p>
+								<div class="input-group">
+									<span css.bind="isError(success)" class="input-group-addon">Business / Capabilites
+										<span show.bind="required" class="error">*</span>
+										<i class='fa fa-spin fa-spinner' style='margin: 0 auto' if.bind="loadingSpinner"></i>
+									</span>
+									<select class="form-control" value.bind="selectedBusinessCapabilities" style="width: 100%" >
+										<option repeat.for="businessCapability of businessCapabilities" value.bind="businessCapability">
+											${businessCapability}
+										</option>
+									</select>
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-primary btn-block" click.trigger="openModal()">Add Final Reviewer</button>
+									</span>
+								</div> 
+							</div>
+							
+							<div class="col-sm-7 line-spacing">
+								<div class="input-group">
+									<span css.bind="isError(requiredElementData[requiredFieldList.FINAL_REVIEWER].success)" class="input-group-addon">
+									Final Reviewer
+									<span if.bind="requiredElementData[requiredFieldList.FINAL_REVIEWER].required" class="error">*</span>
+									</span>
+									<input type="text" class="form-control" value.bind="finalReviewer" style="background-color:white; -webkit-box-shadow: none; box-shadow: none;" readonly />
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-sm-7">
+								<div class="input-group line-spacing">
+									<span class="input-group-addon">
+									ELN Project 
+									<i class='fa fa-spin fa-spinner' if.bind="loadingSpinner"></i>
+									</span>
+									<select id="ELN" class="form-control" value.bind="ELNProject" change.delegate="changeELNCurrentBrowsers($event)" >
+										<option model.bind="null">Select ELN Project</option>
+										<option model.bind="null" disabled></option>
+										<option repeat.for="elnProject of elnProjects" model.bind="elnProject" click.delegate="changeELNIE()">
+											${elnProject.ProjectName}
+										</option>
+									</select>
+								</div>
+								
+								<div class="input-group line-spacing">
+									<span class="input-group-addon">
+										Export Control Status
+										<span if.bind="requiredElementData[requiredFieldList.FINAL_REVIEWER].required" class="error">*</span>
+									</span>
+									<select id="ELN" class="form-control" value.bind="ELNProject" change.delegate="changeELNCurrentBrowsers($event)" >
+										<option model.bind="null">Choose One</option>
+										<option model.bind="null" disabled></option>
+										<option repeat.for="elnProject of elnProjects" model.bind="elnProject" click.delegate="changeELNIE()">
+											${elnProject.ProjectName}
+										</option>
+									</select>
+								</div>
+
+								<div class="input-group line-spacing">
+									<span css.bind="isError(success)" class="input-group-addon">Report Number
+										<span show.bind="required" class="error">*</span>
+									</span>
+									<input type="text" class="form-control" value.bind="finalReviewer" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-primary btn-block" >Get Lab Number</button>
+									</span>
+								</div>
+
+								<div class="input-group line-spacing">
+									<span css.bind="isError(requiredElementData[requiredFieldList.REPORT_DATE].success)" class="input-group-addon">Report Date</span>
+									<input class="form-control" datepicker value.bind="reportDate">
+								</div>
+                                
+                                <div class="pull-left" style="margin-top:6px; margin-left:-15px">
+                                  <span >Limited Distribution
+                                  <label class="ltd-radio">
+                                    <input type="radio" name="optradio">&nbsp;Yes
+                                  </label>
+                                  <label class="ltd-radio">
+                                    <input  type="radio" name="optradio">&nbsp;No
+                                  </label></span>
+</div>
+								<div class="input-group" style="padding-left:20px">
+								  <span id="LTD" if.bind="LTDChecked" class="input-group-addon">LTD Reason<span if.bind="requiredFields.LTD" class="error">*</span></span>
+									<select if.bind="LTDChecked" class="form-control" value.bind="selectedBusinessLTDOption">
+										<option value.bind="null">Select One</option>
+										<option disabled="">..........</option>
+										<option repeat.for="LTDOption of LTDOptions" value.bind="LTDOption">
+											${LTDOption}
+										</option>
+									</select>
+                              </div>
+                                
+							</div>
+                        </div>
+						
+					</div><!-- end panel-body --> 
+				</div>
+			</div>
+		</div>
+    </section>
+	
+	<section show.bind="showReport" class="container">
+		<div class="row">
+			<div class="col-sm-12 col-xs-12">
+				<div class="panel panel-default">
+					<div class="panel-heading clearfix line-spacing">
+						<h3 class="panel-title">General Information</h3>
+					</div>
+					<div class="panel-body">
+					
+						<div class="row">
+							<div class="col-sm-7 line-spacing">
+								<a id="docxbtn" class="btn btn-primary btn-files" style="margin-right:43px">Upload Word Doc</a>
+								<a id="docxbtn" class="btn btn-primary btn-files">Upload PDF Doc</a>
+								<a id="docxbtn" class="btn btn-primary pull-right">Upload Supporting Documents</a> 
+							</div>
+							<div class="col-sm-5 line-spacing">
+								<a id="docxbtn" class="btn btn-primary btn-clear pull-right">Clear All Documents</a>
+								<a id="docxbtn" class="btn btn-primary btn-clear pull-right" style="margin-right:20px">Clear Selected Documents</a>
+							</div> 
+						</div> 
+						
+						<div class="row">
+							<hr />
+							<div class="col-sm-12 line-spacing">
+								<p><label>Report Documents</label></p>
+								<ul>
+								<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="row">
+							<hr />
+							<div class="col-sm-12 line-spacing" >
+								<p><label>Supporting Documents</label></p>
+								<ul>
+									<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+									<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+									<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+									<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+									<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+									<li class="col-sm-4"><input type="checkbox" />Title: Hello<li>
+								</ul>
+							</div>
+						</div>
+ 
+						<div class="row">
+							<div class="col-sm-7 line-spacing">
+								<div class="input-group line-spacing">
+									<span css.bind="isError(requiredElementData[requiredFieldList.TITLE].success)" class="input-group-addon">Title
+									<span if.bind="requiredElementData[requiredFieldList.TITLE].required" class="error">*</span></span>
+									<input class="form-control" value.bind="title" placeholder="Enter Title" />
+								</div>
+							</div>
+							<div class="col-sm-5"></div> 
+						</div>
+
+						<div class="row">
+							
+							
+							<div class="col-sm-12">
+								<div class="input-group line-spacing">
+									<span css.bind="isError(success)" class="input-group-addon">Dow Authors<span if.bind="required" class="error">*</span></span>
+									<input class="form-control" type="text" placeholder="Last Name, First Name" value.bind="name" />
+									<span class="input-group-btn">
+									<button type="button" class="btn btn-primary btn-block" click.trigger="openModal(parent.authors)" innerhtml.bind="addAuthor">Search</button>
+									</span>
+								</div>
+							</div>
+
+							<div class="col-sm-12 line-spacing">
+								<ul>
+									<li class="col-sm-4"><button type="button" class="btn btn-primary btn-xs btn-default-close">
+									<span class="glyphicon glyphicon-remove"></span></button>Title: Hello<li>
+								</ul>
+							</div>
+							
+							<div class="col-sm-12">
+								<div class="input-group line-spacing">
+									<span css.bind="isError(success)" class="input-group-addon">Non Dow Authors<span if.bind="required" class="error">*</span></span>
+									<input class="form-control" type="text" placeholder="Last Name, First Name" value.bind="name" />
+									<span class="input-group-btn">
+									<button type="button" class="btn btn-primary btn-block" click.trigger="openModal(parent.authors)" innerhtml.bind="addAuthor">Search</button>
+									</span>
+								</div>
+							</div>
+
+							<div class="col-sm-12 line-spacing">
+								<ul>
+									<li class="col-sm-4"><button type="button" class="btn btn-primary btn-xs btn-default-close">
+									<span class="glyphicon glyphicon-remove"></span></button>Title: Hello<li>
+								</ul>
+							</div>
+						
+						</div> 
+						<div class="row">
+							<div class="col-sm-12 line-spacing">
+								<div class="input-group" >
+									<span css.bind="isError(requiredElementData[requiredFieldList.ABSTRACT].success)" class="input-group-addon">
+										Abstract
+										<span if.bind="requiredElementData[requiredFieldList.ABSTRACT].required" class="error">*</span>
+									</span>
+									<textarea class="form-control" name="ELN_project" rows=15 placeholder="" value.bind="reportAbstract"></textarea>
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="input-group line-spacing">
+									<span css.bind="isError(success)" class="input-group-addon">Dow Authors<span if.bind="required" class="error">*</span></span>
+									<input class="form-control" type="text" placeholder="Last Name, First Name" value.bind="name" />
+									<span class="input-group-btn">
+									<button type="button" class="btn btn-primary btn-block" click.trigger="openModal(parent.authors)" innerhtml.bind="addAuthor">Search</button>
+									</span>
+								</div>
+							</div>
+
+							<div class="col-sm-12 line-spacing">
+								<ul>
+									<li class="col-sm-4"><button type="button" class="btn btn-primary btn-xs btn-default-close">
+									<span class="glyphicon glyphicon-remove"></span></button>Title: Hello<li>
+								</ul>
+							</div>
+						</div>
+
+					</div><!-- end panel-body --> 
+				</div>
+			</div>
+		</div>
+    </section>
+
+</body>
+</html>
+
+
+
+
 /* Styles go here */
 
 .input-group-addon {
@@ -271,7 +574,7 @@ export class CSSUtility {
   }
   
   static isValidFieldError() {
-    return "background-color:#f00; color:#fff;
+    return "background-color:#f00; color:#fff";
   }
 }
 
@@ -292,16 +595,16 @@ export var RequiredFieldList = {
 };
 
 let RequiredElementData = [
-    { id: "title", key: "TITLE", title: "Title", error: "A Report Title is requried", success: true, required: true, disable: false },
-    { id: "abstract", key: "ABSTRACT", title: "Report Abstract", error: "A Report Abstract is requried", success: true, required: true, disable: false },
-    { id: "dowAuthors", key: "AUTHOR", title: "Dow Author", error: "A Dow Author is requried", success: true, required: true, disable: false },
-    { id: "finalReviewer", key: "FINAL_REVIEWER", title: "Business / Capability", error: "A Final Reviewer is requried", success: true, required: true, disable: false },
-    { id: "reportNumber", key: "REPORT_NUM", title: "Report Number", error: "A Report Number is requried", success: true, required: true, disable: false },
-    { id: "LTD", key: "LTD", title: "Limited Distribution", error: "Limited Distribution is requried", success: true, required: true, disable: false },
-    { id: "ELN", key: "EXPORT_CONTROL", title: "Export Control", error: "Export Control is requried", success: true, required: true, disable: false },
-    { id: "databookNumber", key: "NON_AUTHOR", title: "Non Dow Author", error: "Dow Author", success: true, required: true, disable: true },
-    { id: "nonDowAuthors", key: "DATABOOK_NUM", title: "Data Book Number", error: "Data Book NUmber has incorrect format", success: true, required: true, disable: true },
-    { id: "business", key: "BUSINESS", title: "Data Book Number", error: "Data Book NUmber has incorrect format", success: true, required: true, disable: true }
+    { id: "title", key: "TITLE", title: "Title", error: "A Report Title is requried", success: true, required: true, disable: false, none:true},
+    { id: "abstract", key: "ABSTRACT", title: "Report Abstract", error: "A Report Abstract is requried", success: true, required: true, disable: false, none:true },
+    { id: "dowAuthors", key: "AUTHOR", title: "Dow Author", error: "A Dow Author is requried", success: true, required: true, disable: false, none:true },
+    { id: "finalReviewer", key: "FINAL_REVIEWER", title: "Business / Capability", error: "A Final Reviewer is requried", success: true, required: true, disable: false, none:true },
+    { id: "reportNumber", key: "REPORT_NUM", title: "Report Number", error: "A Report Number is requried", success: true, required: true, disable: false, none:true },
+    { id: "LTD", key: "LTD", title: "Limited Distribution", error: "Limited Distribution is requried", success: true, required: true, disable: false, none:true },
+    { id: "ELN", key: "EXPORT_CONTROL", title: "Export Control", error: "Export Control is requried", success: true, required: true, disable: false, none:true },
+    { id: "databookNumber", key: "NON_AUTHOR", title: "Non Dow Author", error: "Dow Author", success: true, required: true, disable: true, none:true },
+    { id: "nonDowAuthors", key: "DATABOOK_NUM", title: "Data Book Number", error: "Data Book NUmber has incorrect format", success: true, required: true, disable: true, none:true },
+    { id: "business", key: "BUSINESS", title: "Data Book Number", error: "Data Book NUmber has incorrect format", success: true, required: true, disable: true, none:true }
 
 ];
 
