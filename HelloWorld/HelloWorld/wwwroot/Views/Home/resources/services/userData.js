@@ -1,5 +1,5 @@
 ﻿import { inject } from "aurelia-framework";
-import { HttpClient } from "aurelia-http-client";
+import { HttpClient } from "aurelia-fetch-client";
 
 let baseUrl = "Users";
 let timeout = 200;
@@ -12,48 +12,37 @@ export class UserData {
         this.http = httpClient;
     }
 
-    search(text) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                let found = this.http.get(`${baseUrl}/Search/${text}`)
-                    .then(response => {
-                        return response.content;
-                    })
-                    .catch(error => {
-                        alert("----- error getting user from server -------------");
-                    });
-                resolve(found);
-            }, timeout);
-        });
+    getAll() {
+        return this.http.fetch(`${baseUrl}/AllUsers`)
+            .then(response => {
+                return response.json();
+            })
+            .catch(error => {
+                console.log("----- error getting users -------------");
+            });
+    }
+
+    search(name) {
+        return this.http.fetch(`${baseUrl}/SearchByName?name=${name}`, {
+            method: "GET",
+            headers: { 'content-type': 'application/json' }
+        })
+            .then(response => {
+                return response.json();
+            })
+            .catch(error => {
+                console.log("----- error getting reviewers -------------");
+            });
     }
 
     searchById(id) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                let found = this.http.get(`${baseUrl}/SearchById/${id}`)
-                    .then(response => {
-                        return response.content;
-                    })
-                    .catch(error => {
-                        alert("----- error getting user from server -------------");
-                    });
-                resolve(found);
-            }, timeout);
-        });
-    }
-
-    getAll() {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                let found = this.http.get(`${baseUrl}`)
-                    .then(response => {
-                        return response.content;
-                    })
-                    .catch(error => {
-                        alert("----- error getting user from server -------------");
-                    });
-                resolve(found);
-            }, timeout);
-        });
+        return this.http.fetch(`${baseUrl}/SearchById?id=${id}`)
+            .then(response => {
+                return response.json();
+            })
+            .catch(error => {
+                console.log("----- error getting reviewers -------------");
+            });
     }
 }
+

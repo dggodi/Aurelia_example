@@ -1,35 +1,40 @@
-﻿using HelloWorld.Models;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Web.Http;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using HelloWorld.Models;
+using System.Threading.Tasks;
+using System.Data.Entity;
 
 namespace HelloWorld.Controllers
 {
-    public class UsersController : Controller
+    [RoutePrefix("Users")]
+    public class UsersController : ApiController
     {
         MovieContext db = new MovieContext();
-        
-        // GET: Users
-        public ActionResult Index()
+
+        [Route("AllUsers")]
+        [HttpGet]
+        public async Task<List<Users>> AllUsers()
         {
-            var m = db.users.ToList();
-            return Json(m, JsonRequestBehavior.AllowGet);
+            var result = await db.users.ToListAsync();
+            return result;
         }
 
+        [Route("SearchByName")]
         [HttpGet]
-        public ActionResult Search(string text)
+        public async Task<List<Users>> SearchByName(string name)
         {
-            var m = db.users.Where(r => r.LastName.StartsWith(text));
-            return Json(m, JsonRequestBehavior.AllowGet);
+            var result = await db.users.Where(r => r.LastName.StartsWith(name)).ToListAsync();
+            return result;
         }
 
+        [Route("SearchById")]
         [HttpGet]
-        public ActionResult SearchById(string id)
+        public async Task<Users> SearchById(string id)
         {
-            var m = db.users.Where(r => r.DowId ==id);
-            return Json(m, JsonRequestBehavior.AllowGet);
+            var result = await db.users.Where(r => r.DowId.Equals(id)).FirstAsync();
+            return result;
         }
+
     }
 }

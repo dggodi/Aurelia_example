@@ -1,6 +1,7 @@
 ﻿<template>
     <div class="input-group">
-        <span class="input-group-addon" css.bind="isError(success)">Business / Capabilites
+        <span class="input-group-addon" css.bind="isError(success)">
+            Business / Capabilites
             <span class="error" show.bind="required">*</span>
             <i class='fa fa-spin fa-spinner' style='margin: 0 auto' if.bind="loadingSpinner"></i>
         </span>
@@ -10,9 +11,8 @@
             </option>
         </select>
         <span class="input-group-btn">
-            <button type="button" class="btn btn-primary btn-block"  click.trigger="openModal()">Add Final Reviewer</button>
+            <button type="button" class="btn btn-primary btn-block" click.trigger="openModal()">Add Final Reviewer</button>
         </span>
     </div>
-    
     
 </template>

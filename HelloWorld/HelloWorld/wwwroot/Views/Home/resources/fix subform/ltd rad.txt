@@ -1,0 +1,89 @@
+.cancel-button{pointer-events: none;}
+
+<template>
+
+<div class="row">
+    <div class="col-sm-7">
+        <div class="input-group line-spacing">
+		        <span css.bind="isError(requiredElementData[requiredFieldList.REPORT_DATE].success)" class="input-group-addon">Report Date</span>
+						    <input class="form-control" datepicker value.bind="reportDate">
+				</div>
+        <div class="pull-left" style="margin-top:6px">
+            <span >Limited Distribution
+                <label repeat.for="LTDoption of LTDoptions" style="margin-left:10px">
+                <input type="radio" name="LTD" model.bind="LTDoption" checked.bind="selectedLTDOption" click.delegate="LTDChecked(LTDoption)" />
+                      	${LTDoption.text}
+                </label>
+            </span>
+        </div>
+				<div show.bind="showLTDReason" class="input-group pull-right" style="padding-left:20px; width:100px">
+    				<span id="LTD" if.bind="LTDChecked" class="input-group-addon">LTD Reason<span if.bind="requiredFields.LTD" class="error">*</span></span>
+    				<select if.bind="LTDChecked" class="form-control" value.bind="selectedBusinessLTDOption">
+        				<option repeat.for="LTDReasonOption of LTDReasonOptions" value.bind="LTDReasonOption">
+        				${LTDReasonOption}
+        				</option>
+    				</select>
+        </div>
+
+    </div>
+</div>
+
+
+
+</template>
+
+
+import { DataFormUtility, FieldList, ValidateForm, ReportTypes } from "./dataFormUtility";
+
+export class App {
+
+  LTDoptions = [
+    { id: 0, text: 'Yes'},
+    { id: 1, text: 'No'}
+  ];
+  
+  LTDReasonOptions = [
+    "Third party legal obligations",
+    "Trade Secretes" 
+  ];
+  
+  dataUtility = new DataFormUtility();
+  fields = FieldList;
+  ctrl;
+  
+  showLTDReason = false;
+
+  constructor() {
+       this.ctrl = this.dataUtility.getElementData();
+  }
+  
+  LTDChecked(LTDoption) {
+		if(LTDoption != null){
+    		if (LTDoption.text === "Yes") {
+    			this.dataUtility.setSuccess(FieldList.LTD_REASON, true);
+    			this.showDocumentEntry = true;
+    			this.showLTDReason = true;
+    		}
+    		else
+    		  this.showLTDReason = false;
+		}
+		
+		return true;
+	}
+	changeLTDReasonIE() {
+		this.changeLTDReason(this.LTDReasonOption);
+	}
+	changeLTDReasonCurrentBrowsers(event) {
+		this.changeLTDReason(this.LTDReasonOption);
+	}
+	changeLTDReason(LTDReasonOption) {
+		if (LTDReasonOption != null) {
+			this.dataUtility.setSuccess(FieldList.LTD_REASON, true);
+			this.dataUtility.setFlow(FieldList.LTD_REASON, true);
+			this.showDocumentEntry = true;
+		} else {
+			this.dataUtility.setSuccess(FieldList.LTD_REASON, false);
+			this.showDocumentEntry = false;
+		}
+	}
+}

@@ -2,7 +2,12 @@
 import { DialogController } from 'aurelia-dialog';
 import { UserData } from "../services/userData"
 import { DataObjectUtility } from "../services/dataUtility"
-import { ValidateForm, FieldList} from "../services/DataFormUtility" 
+import { ValidateForm, FieldList } from "../services/DataFormUtility" 
+import { Timer } from "../services/timer"
+
+const DURATION = 2;
+const HEADING = "Search for Author";
+
 /**
  * program purpose:
  * - Modal service used to search by name or DowId and retreive dow authors from active directory and
@@ -24,12 +29,13 @@ import { ValidateForm, FieldList} from "../services/DataFormUtility"
  */
 @inject(DialogController, UserData)
 export class AuthorDialog {
-    heading = 'Search for Author';
-
     @bindable({ defaultBindingMode: bindingMode.twoWay }) name;
 
+    timeoutObj = new Timer(DURATION); 
+
     authors = [];
-    
+    heading = HEADING;
+    message = "";
 
     selectedAuthor; 
     data;
@@ -161,23 +167,30 @@ export class AuthorDialog {
             this.data.utility.setSuccess(FieldList.AUTHOR, false);
             this.data.utility.setFlow(FieldList.ABSTRACT, false);
         }
+        this.timeoutObj.cancel();
+        //$("#btnAdd").removeAttr('disabled');
     }
 
     /**
      * if successful retrieve user data from the userData Service
      */
     search(name) {
+        //$("#btnAdd").prop('disabled', 'disabled');
+        this.message = "";
+        this.timeoutObj.start();
+
         this.userData.search(name)
             .then(authors => {
-                if (authors.length == 0)
-                    alert("timout");
-
-                this.authors = authors;
+                if (!this.timeoutObj.isTimeout())
+                    this.authors = authors;
+                else
+                    this.message = "Refine your search";
 
                 this.loadingSpinner = false;
             })
             .catch(error => {
                 console.log("----- error getting user info -------------");
+                //$("#btnAdd").removeAttr('disabled');
                 this.loadingSpinner = false;
             });
         console.log(this.authors);

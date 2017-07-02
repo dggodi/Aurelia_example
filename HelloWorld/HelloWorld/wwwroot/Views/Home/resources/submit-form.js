@@ -1,12 +1,34 @@
 ﻿import { bindable, bindingMode } from 'aurelia-framework';
 import { DataFormUtility, FieldList, ValidateForm, ReportTypes} from "./resources/services/dataFormUtility"
 import { CSSUtility } from "./resources/services/CSSUtility"
+import { RicSubmissionData } from "./resources/services/ricSubmssionData";
 
-let _reportSelections = {
-    CRI: 0,
-    PROJECT_LEARNING: 1,
-    TECH_LEARNING: 2
-}
+const RIC_SUBMISSION_ID = "ricSubmission";
+
+let RequestTable = {
+    PrimaryAuthorUserId: "",
+    PrimaryAuthorName: "",
+    PrimaryAuthorEmail: "",
+    ReportType: "",
+    Reportdate: "",
+    ReportNumber: "",
+    DataBookNumber: "",
+    ELNProjectName: "",
+    KeyWords: "",
+    OtherKeyWords: "",
+    Abstract: "",
+    Title: "",
+    NonDowAuthors: "",
+    Business: "",
+    FinalReviewerUserID: "",
+    FinalReviewerName: "",
+    ExportControl: 0,
+    LTD: true,
+    LTDReason: "",
+    Authors: "",
+};
+
+let formID = ricSubmission
 
 export class App {
     @bindable({ defaultBindingMode: bindingMode.twoWay }) showreport;
@@ -15,7 +37,9 @@ export class App {
     @bindable({ defaultBindingMode: bindingMode.twoWay }) finalReviewer;
     @bindable({ defaultBindingMode: bindingMode.twoWay }) dowAuthors= [];
 
-    LTDOptions = [
+    LTDoptions = ["Yes", "No"];
+
+    LTDOptionReasons = [
         "Third party legal obligations",
         "Trade Secretes"
     ];
@@ -26,9 +50,7 @@ export class App {
 
     constructor() {
         this.ctrl = this.dataUtility.getElementData();
-        this.generalInformation = false;
-        this.showSubmit = false;
-        $('#business').val('');
+
         this.reset();
     }
 
@@ -41,11 +63,9 @@ export class App {
         if ( !(ValidateForm.isDataBookNumber(newValue)) ) {
             this.dataUtility.setFlow(FieldList.REPORT_NUM, true);
             this.dataUtility.setSuccess(FieldList.DATABOOK_NUM, true);
-            errorDataBookNumber = false;
         }
         else {
             this.dataUtility.setSuccess(FieldList.DATABOOK_NUM, false);
-            errorDataBookNumber = true;
         }
     }
 
@@ -133,30 +153,44 @@ export class App {
     }
 
     reset() {
-        this.selectedBusinessCapabilities = [];
+        $("#" + RIC_SUBMISSION_ID)[0].reset();
 
         $('#business').val('').trigger('change');
-        $('#finalReviwer').val('');
-        $('#ELN').val('');
-        $('#exportControlled').val('');
-
-        console.log($('#business').val());
+        this.selectedBusinessCapabilities = [];
+        this.dowAuthors = [];
+        this.diList = [];
 
         this.finalReviewer = "";
+        this.nonDowAuthors = "";  
+
+        this.showReport = false;
+        this.showDocumentEntry = false;
+        this.showSubmit = false;
+
         this.dataUtility.resetForm();
     }
 
     submit() {
-
-        console.log($('#business').val());
-
         if (this.isFormValid()) {
+            let processedRequestTable = this.prepareRequestTable(RequestTable);
+            this.submitReport(processedRequestTable);
             console.log("OK")
         }
         else {
             console.log("NOT OK")
         }
     } 
+
+    submitReport(processedRequestTable) {
+        this.ricData.postRicSubmission(RequestTable)
+            .then(success => {
+                console.log("submission success");
+            })
+            .catch(error => {
+                console.log("submission failed");
+            });
+        }
+    }
 
     isError(obj) {
         if (obj)
@@ -167,29 +201,92 @@ export class App {
 
     isFormValid() {
 
-        let valid = true;
+        for (let i in FieldList) {
+            if (!(this.dataUtility.getNone(FieldList[i])) && !(this.dataUtility.getSuccess(FieldList[i])))
+                return false; 
+        }
 
-        //for (let i in RequiredFieldList) {
-        //    let id = this.dataUtility.getID(RequiredFieldList[i]);
-        //    var element = document.getElementById(id);
-
-        //    if (typeof (element) != 'undefined' && element != null) {
-        //        let v = document.getElementById(id).value
-        //        valid = this.dataUtility.setSuccess(RequiredFieldList[i], ValidateForm.isEmpty(v));
-        //    } else {
-        //        if (id instanceof Function) {
-        //            console.log("FormValid - else " + id);
-        //            //valid = this.dataUtility.setSuccess(RequiredFieldList[i], ValidateForm.isEmptyContainer(id));
-        //        }
-        //    }
-
-        //}
-
-
-
-        //valid = this.dataUtility.setSuccess(RequiredFieldList.FINAL_REVIEWER, ValidateForm.isEmpty(this.finalReviewer))
-        return valid;
+        return true;
     }
 
-    
+    prepareRequestTable(RequestTable) {
+        let tmpRequestTable = RequestTable;
+
+        for (let i in FieldList) {
+            let id = this.dataUtility.getID(FieldList[i]);
+
+            $.each(RequestTable, function (key, element) {
+                if (key == tmp.getKey(FieldList[i])) {
+                    if ($("#" + id).is("input"))
+                        tmpRequestTable[key] = $(id).val();
+                    else if ("#" + $(id).is("select"))
+                        tmpRequestTable[key] = $("#" + id + "option:selected").text();
+                    else if ($("input[name=" + id + "]").length != 0)
+                        tmpRequestTable[key] = $("input[name=" + id + "]:checked").val()
+                }
+            });
+        }
+
+        let finalReviewer = JSON.stringify(this.finalReviewer);
+        let primaryAuthor = new User(this.dowAuthors[0]);
+
+        tmpRequestTable.ReportType = this.dataUtility.getReportType();
+        tmpRequestTable.PrimaryAuthorUserId = primaryAuthor.DowId;
+        tmpRequestTable.PrimaryAuthorName = primaryAuthor.DisplayName;
+        tmpRequestTable.PrimaryAuthorEmail = primaryAuthor.Email;
+        //tmpRequestTable.KeyWords =;
+        //tmpRequestTable.KeyWords =;
+        tmpRequestTable.FinalReviewerUserID = finalReviewer.substring(finalReviewer.lastIndexOf("(") + 1, finalReviewer.lastIndexOf(")"));
+        tmpRequestTable.FinalReviewerName = "" + this.finalReviewer;
+        tmpRequestTable.NonDowAuthors = this.nonDowAuthors;
+        tmpRequestTable.Authors = User.convertToString(this.dowAuthors);
+
+        return tmpRequestTable;
+    }
+}
+
+class User {
+    Id;
+    DowId;
+    FirstName;
+    LastName;
+    Email;
+    DisplayName;
+
+    constructor(data) {
+        this.Id = data.Id;
+        this.DowId = data.DowId;
+        this.FirstName = data.FirstName;
+        this.LastName = data.LastName;
+        this.Email = data.Email;
+        this.DisplayName = data.DisplayName;
+    }
+
+    static convertToString(obj) {
+        var tmp = "";
+        for (let i in obj) {
+            let user = new User(obj[i]);
+            tmp = tmp + user.toString() + ";"
+        }
+
+        return (tmp.length > 0) ? obj.slice(0, - 1) : tmp;
+    }
+
+    toString() {
+        return this.DisplayName + " " + this.DowId;
+    }
+}
+
+class DiList {
+    Id;
+    RIC_ID;
+    UserId;
+    UserEmailAddress;
+
+    constructor(data) {
+        this.Id = data.Id;
+        this.RIC_ID = data.RIC_ID;
+        this.UserId = data.DowId;
+        this.UserEmailAddress = data.Email;
+    }
 }

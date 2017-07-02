@@ -90,10 +90,10 @@ export class FinalReviewerDialog {
         var userIDs = new Array();
         userIDs = data;
 
-        for (var i = 0; i < userIDs.length; i++) {
-            this.userData.searchById(userIDs[i])
+        //for (var i = 0; i < userIDs.length; i++) {
+            this.userData.searchById(userIDs)
                 .then(obj => {
-                    var s = obj[0];
+                    var s = obj;
                     if (this.set.contains(s.DowId) === false) {
                         this.set.add(s.DowId)
                         this.finalReviewers.push(s);
@@ -102,7 +102,7 @@ export class FinalReviewerDialog {
                 .catch(error => {
                     console.log("error getting user data ");
                 });
-        }
+        //}
     }
 
     setFormFlow() {

@@ -1,5 +1,5 @@
 ﻿import { inject } from "aurelia-framework";
-import { HttpClient } from "aurelia-http-client";
+import { HttpClient } from "aurelia-fetch-client";
 
 let baseUrl = "Reviewer";
 let timeout = 200;
@@ -13,57 +13,31 @@ export class FinalReviewerData {
     }
 
     getAll() {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                let found = this.http.get(baseUrl)
-                    .then(response => {
-                        return response.content;
-                    })
-                    .catch(error => {
-                        console.log("----- error getting reviewers -------------");
-                    });
-                resolve(found);
-            }, timeout);
-        });
-    }
-
-    getReviewers(text) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                let found = this.http.get(`${baseUrl}/Search/${id}`)
-                    .then(response => {
-                        return response.content;
-                    })
-                    .catch(error => {
-                        console.log("----- error getting reviewers -------------");
-                    });
-                resolve(found);
-            }, timeout);
-        });
+        return this.http.fetch(`${baseUrl}/BusinessCapabilities`)
+            .then(response => {
+                return response.json();
+            })
+            .catch(error => {
+                console.log("----- error getting businesses -------------");
+            });              
     }
 
     getByBusiness(obj) {
-        return this.http.createRequest(`${baseUrl}/Search`)
-            .asPost()
-            .withHeader('Content-Type', 'application/json; charset=utf-8')
-            .withContent({ BusinessCapability: obj })
-            .send()
-            .then(response => {           
-                console.log(response.response);
-                return response.content;
-            }).catch(err => {
-                console.log(err);
-            });
+        var business = { BusinessCapability: obj }
+
+        return this.http.fetch(`${baseUrl}/FinalReviewer`, {
+                method: "POST",
+                headers: { 'content-type': 'application/json' }, body: JSON.stringify(business)
+            }).then(response => {
+                return response.json();
+            })
+            .catch(error => {
+                console.log("----- error getting reviewers -------------");
+            }); 
     }
+
+    
 }
-
-function URLEncode(data) {
-    var strdata = "" + data;
-
-    strdata = strdata.replace(/&/, "and");
-
-    return strdata;
-} 
 
 //function URLEncode(StringData) {
 //    var SAFECHARS = "0123456789" + // Numeric
