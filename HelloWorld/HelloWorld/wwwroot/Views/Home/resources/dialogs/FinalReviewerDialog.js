@@ -105,38 +105,12 @@ export class FinalReviewerDialog {
         //}
     }
 
-    setFormFlow() {
-
-        this.data.utility.setFlow(FieldList.FINAL_REVIEWER, true);
-
-        switch (this.data.utility.getReportType()) {
-            case ReportTypes.CRI:               
-                this.data.utility.setFlow(FieldList.ELN, true);
-                break;
-
-            case ReportTypes.PROJECT_LEARNING:
-                this.data.utility.setFlow(FieldList.EXPORT_CONTROL, true);
-                console.log("setFormFlow  CRI" + this.data.utility.getFlow(FieldList.ELN));
-                console.log("setFormFlow  PROJECT_LEARNING" + this.data.utility.getFlow(FieldList.EXPORT_CONTROL));
-
-                break;
-
-            case ReportTypes.TECH_LEARNING:
-                this.data.utility.setFlow(FieldList.REPORT_DATE, true);
-                break;
-        }
-    }
-
     /**
      * returns back to the caller after the values of the final reviewer object is
      * assigned to reviewer stored in the caller
      */
     ok() {
-        this.data.reviewer = convertObjectToString(this.selectedFinalReviewer);
-        this.data.utility.setSuccess(FieldList.FINAL_REVIEWER, true);
-        this.data.utility.setSuccess(FieldList.BUSINESS, true);
-        this.setFormFlow();
-        
+        this.data.reviewer = convertObjectToString(this.selectedFinalReviewer);  
         this.controller.ok();
     }
 
@@ -144,7 +118,6 @@ export class FinalReviewerDialog {
      * return back to the caller
      */
     cancel() {
-        this.data.utility.setSuccess(FieldList.FINAL_REVIEWER, false);
         this.controller.cancel()
     }
 

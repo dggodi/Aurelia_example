@@ -139,8 +139,8 @@ export class AuthorDialog {
      */
     submit() {
         this.data.authors = this.finalAuthors;
-        this.data.utility.setSuccess(FieldList.AUTHOR, true);
-        this.data.utility.setFlow(FieldList.ABSTRACT, true);
+        //this.data.utility.setSuccess(FieldList.AUTHOR, true);
+        //this.data.utility.setFlow(FieldList.ABSTRACT, true);
         this.controller.ok();
     }
 
@@ -152,12 +152,12 @@ export class AuthorDialog {
         if (JSON.stringify(DataObjectUtility.cloneObject(this.finalAuthors)) !=
             JSON.stringify(this.data.authors)) {
             if (confirm("Unsaved data, are you sure you want to navigate away?")) {
-                this.resetSuccessOfField(this.finalAuthors);
+                //this.resetSuccessOfField(this.finalAuthors);
                 this.controller.cancel();
             }
         }
         else {
-            this.resetSuccessOfField(this.finalAuthors);
+            //this.resetSuccessOfField(this.finalAuthors);
             this.controller.cancel();
         }
     }

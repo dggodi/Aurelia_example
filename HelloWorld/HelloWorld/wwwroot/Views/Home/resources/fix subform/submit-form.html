@@ -1,0 +1,226 @@
+﻿<template>
+    <form id="ricSubmission">
+        <section class="container form-inline line-spacing">
+            <require from="./resources/elements/retrieve-report-type"></require>
+            <retrieve-report-type utility.bind="dataUtility" showreport.bind="showReport"></retrieve-report-type>
+        </section>
+
+        <section class="container" show.bind="showGenralInfo">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix line-spacing">
+                            <h3 class="panel-title">General Information</h3>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-12 line-spacing">
+                                    <p><label><span class="error">*</span> Indicates required field</label></p>
+                                    <require from="./resources/elements/retrieve-businesses"></require>
+                                    <retrieve-businesses reviewer.two-way="finalReviewer"
+                                                         success.bind="ctrl[fields.BUSINESS].success"
+                                                         required.bind="ctrl[fields.BUSINESS].required"
+                                                         utility.bind="dataUtility" selectedbusinesses.bind="selectedBusinessCapabilities">
+                                    </retrieve-businesses>
+
+                                </div>
+                                <div class="col-sm-7 line-spacing" show.bind="showFinalReviewer">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" css.bind="isError(ctrl[fields.BUSINESS].success)">
+                                            Final Reviewer
+                                            <span if.bind="ctrl[fields.FINAL_REVIEWER].required" class="error">*</span>
+                                        </span>
+                                        <input type="text" class="form-control" value.bind="finalReviewer" style="background-color:white; -webkit-box-shadow: none; box-shadow: none;" readonly />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-7">
+                                    <div show.bind="showELN">
+                                        <div class="input-group line-spacing">
+                                            <span class="input-group-addon" css.bind="isError(ctrl[fields.ELN].success)">
+                                                ELN Project
+                                                <i class='fa fa-spin fa-spinner' if.bind="loadingSpinner"></i>
+                                            </span>
+                                            <select id="ELN" class="form-control" value.bind="ELNProject">
+                                                <option model.bind="null">Select ELN Project</option>
+                                                <option model.bind="null" disabled></option>
+                                                <option repeat.for="elnProject of elnProjects" model.bind="elnProject">
+                                                    ${elnProject.ProjectName}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <!--<require from="./resources/elements/retrieve-eln"></require>
+                                        <retrieve-eln success.bind="ctrl[fields.ELN].success"
+                                                      required.bind="ctrl[fields.ELN].required"
+                                                      utility.bind="dataUtility">
+                                        </retrieve-eln>-->
+                                    </div>
+
+                                    <div show.bind="showExportControl">
+                                        <div class="input-group line-spacing">
+                                            <span class="input-group-addon" css.bind="isError(ctrl[fields.EXPORT_CONTROL].success)">
+                                                Export Control Status
+                                                <span if.bind="ctrl[fields.EXPORT_CONTROL].required" class="error">*</span>
+                                            </span>
+                                            <select id="exportControl" class="form-control" value.bind="selectedExportStatus">
+                                                <option model.bind="null">Choose</option>
+                                                <option model.bind="null" disabled></option>
+                                                <option repeat.for="exportControl of exportControls" value.bind="exportControl">
+                                                    ${exportControl}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <!--<require from="./resources/elements/retrieve-export-control"></require>
+                                        <retrieve-export-control success.bind="ctrl[fields.EXPORT_CONTROL].success"
+                                                                 required.bind="ctrl[fields.EXPORT_CONTROL].required"
+                                                                 utility.bind="dataUtility">
+                                        </retrieve-export-control>-->
+                                    </div>
+
+                                    <div class="input-group line-spacing" show.bind="ctrl[fields.DATABOOK_NUM].flow">
+                                        <span css.bind="isError(ctrl[fields.DATABOOK_NUM].success)" class="input-group-addon">
+                                            Databook Number
+                                            <span show.bind="ctrl[fields.DATABOOK_NUM].required" class="error">*</span>
+                                        </span>
+                                        <input id="databookNumber" type="text" class="form-control" placeholder="123456789" value.bind="databookNumber & debounce:1000" />
+                                    </div>
+
+                                    <div class="input-group line-spacing" show.bind="ctrl[fields.REPORT_NUM].flow">
+                                        <span css.bind="isError(ctrl[fields.REPORT_NUM].required)" class="input-group-addon">
+                                            Report Number
+                                            <span show.bind="required" class="error">*</span>
+                                        </span>
+                                        <input id="reportNumber" type="text" class="form-control" value.bind="reportNumber & debounce:1000" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary btn-block" click.delegate="getLabCode()">Select Lab Number</button>
+                                        </span>
+                                    </div>
+
+                                    <div class="input-group line-spacing" show.bind="ctrl[fields.REPORT_DATE].flow">
+                                        <span css.bind="isError(ctrl[fields.REPORT_DATE].required)" class="input-group-addon">
+                                            Report Date
+                                            <span show.bind="required" class="error">*</span>
+                                        </span>
+                                        <input id="reportDate" type="text" class="form-control" value.bind="reportDate" />
+
+                                    </div>
+
+                                    <div show.bind="showLTD">
+                                        <div class="input-group" style="margin-left:-11px">
+                                            <span class="input-group-addon" css.bind="isError(ctrl[fields.LTD].success)" >
+                                                <input type="checkbox" checked.bind="LTDChecked">&nbsp;Limited Distribution<span if.bind="ctrl[fields.LTD].required" class="error">*</span>
+                                            </span>
+                                            <span id="LTD" if.bind="LTDChecked" css.bind="success" class="input-group-addon">LTD Reason<span if.bind="required" class="error">*</span></span>
+                                            <select if.bind="LTDChecked" class="form-control" value.bind="selectedBusinessLTDOption" change.delegate="changeLTDCurrentBrowsers($event)">
+                                                <option value.bind="null">Select One</option>
+                                                <option disabled></option>
+                                                <option repeat.for="LTDOption of LTDOptions" value.bind="LTDOption" click.delegate="changeLTDIE()">
+                                                    ${LTDOption}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <!--<require from="./resources/elements/retrieve-export-control"></require>
+                                        <retrieve-export-control success.bind="ctrl[fields.LTD_REASON].success"
+                                                                 required.bind="ctrl[fields.LTD_REASON].required"
+                                                                 utility.bind="dataUtility">
+                                        </retrieve-export-control>-->
+                                    </div>
+
+                                </div>
+                            </div><!-- end row-->
+
+                        </div> <!-- end panel-body -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container" show.bind="showDocumentEntry">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix line-spacing">
+                            <h3 class="panel-title">Document Entry</h3>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-7 line-spacing">
+                                    <a id="docxbtn" class="btn btn-primary btn-files" style="margin-right:43px">Upload Word Doc</a>
+                                    <a id="docxbtn" class="btn btn-primary btn-files">Upload PDF Doc</a>
+                                    <a id="docxbtn" class="btn btn-primary pull-right">Upload Supporting Documents</a>
+                                </div>
+                                <div class="col-sm-5 line-spacing">
+                                    <a id="docxbtn" class="btn btn-primary btn-clear pull-right">Clear All Documents</a>
+                                    <a id="docxbtn" class="btn btn-primary btn-clear pull-right" style="margin-right:20px">Clear Selected Documents</a>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <hr />
+                                <div class="col-sm-12 line-spacing">
+                                    <p><label>Report Documents</label></p>
+                                    <!-- repeat doc  -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <hr />
+                                <div class="col-sm-12 line-spacing">
+                                    <p><label>Supporting Documents</label></p>
+                                    <!-- repeat doc  -->
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-7 line-spacing">
+                                    <div class="input-group">
+                                        <span css.bind="isError(ctrl[fields.TITLE].success)" class="input-group-addon">
+                                            Title
+                                            <span if.bind="ctrl[fields.TITLE].required" class="error">*</span>
+                                        </span>
+                                        <input class="form-control" value.bind="title" placeholder="Enter Title" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12 line-spacing" show.bind="showAuthors">
+                                    <require from="./resources/elements/retrieve-authors"></require>
+                                    <retrieve-authors authors.bind="dowAuthors" utility.bind="dataUtility" name.bind="dowName"
+                                                      required.two-way="ctrl[fields.AUTHOR].required"
+                                                      success.bind="ctrl[fields.AUTHOR].success">
+                                    </retrieve-authors>
+                                </div>
+
+                                <div class="col-sm-12 line-spacing" show.bind="ctrl[fields.NON_AUTHOR].flow">
+                                    <require from="./resources/elements/retrieve-non-dow-authors"></require>
+                                    <retrieve-non-dow-authors success.bind="ctrl[fields.NON_AUTHOR].success" authors.bind="nonDowAuthors">
+                                    </retrieve-non-dow-authors>
+                                </div>
+
+                                <div class="col-sm-12 input-group line-spacing" show.bind="ctrl[fields.ABSTRACT].flow">
+                                    <span css.bind="isError(ctrl[fields.ABSTRACT].success)" class="input-group-addon">
+                                        Abstract
+                                        <span if.bind="ctrl[fields.ABSTRACT].required" class="error">*</span>
+                                    </span>
+                                    <textarea id="reportAbstract" class="form-control" name="ELN_project" rows=15 placeholder="" value.bind="reportAbstract"></textarea>
+                                </div>
+                            </div><!-- end row-->
+
+                        </div> <!-- end panel-body -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div show.bind="submitReport"><button type="button" class="btn btn-default btn-block" click.delegate="submit()">Submit</button></div>
+            <div show.bind="showReport"><button type="button" class="btn btn-default" click.delegate="cancel()">Cancel</button></div>
+        </section>
+
+    </form>
+</template>

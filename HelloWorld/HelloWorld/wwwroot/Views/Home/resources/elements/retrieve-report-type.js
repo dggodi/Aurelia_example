@@ -35,7 +35,7 @@ export class RetrieveReportType {
     changeReport(report) {
         this.reset();
         if (report != null) {
-            this.showreport = true;
+            //this.showreport = true;
             switch (report.id) {
                 case ReportTypes.CRI:
                     this.initFormData(formControls.cri);
