@@ -1,0 +1,32 @@
+﻿<template>
+    <form id="ricSubmission">
+        
+
+       
+
+        <section class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix line-spacing">
+                            <h3 class="panel-title">Document Entry</h3>
+                        </div>
+
+                        <div class="panel-body">
+                            
+                            <require from="./resources/elements/retrieve-files"></require>
+                            <retrieve-files files.bind="files"></retrieve-files>
+
+                        </div> <!-- end panel-body -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--<section class="container">
+            <div show.bind="submitReport"><button type="button" class="btn btn-default btn-block" click.delegate="submit()">Submit</button></div>
+            <div show.bind="showReport"><button type="button" class="btn btn-default" click.delegate="cancel()">Cancel</button></div>
+        </section>-->
+
+    </form>
+</template>
