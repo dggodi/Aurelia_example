@@ -1,0 +1,353 @@
+////////////////
+
+https://github.com/sitepoint-editors/aurelia-pdfjs
+https://github.com/grofit/aurelia-files
+
+////////////////////
+<template>
+  <require from="resources/elements/pdf-document"></require>
+
+  <!--
+  This is just a regular Aurelia viewmodel. We import the pdf-document element that
+  we created, and we bind viewmodel properties to it.
+  -->
+  <section>
+    <div class="row">
+      <!-- We can use multiple pdf-document elements in one page - we can even use them in a repeater. -->
+      <div class="col-md-6" repeat.for="document of documents">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <input id="url" type="text" class="form-control" value.bind="document.draftUrl" />
+            <button click.delegate="loadUrl(document)" class="btn btn-primary btn-block btn-sm">Load PDF URL</button
+          </div>
+
+          Zoom:
+
+          <input id="scale" type="number" step="0.1" class="form-control" value.bind="document.scale" />
+          Page:
+          <input id="pagenumber" type="number" class="form-control" value.bind="document.pageNumber" />
+        </div>
+        <div class="col-xs-12">
+          <!-- Here, we use the pdf-document custom element. Note the bindables. -->
+          <pdf-document url.bind="document.url" page.bind="document.pageNumber" lastpage.bind="document.lastpage" scale.bind="document.scale"></pdf-document>
+
+          <!--
+          Note that the toolbar isn't part of the custom element; it's part of the containing view.
+          This makes customization easy.
+          -->
+
+          <div style="position: absolute; top: 3em; left: 50%; right: 50%;">
+            <div class="pdf-toolbar text-center">
+              ${document.pageNumber} / ${document.lastpage}
+              <button click.delegate="zoomIn(document)" class="btn btn-link">
+                <i class="fa fa-plus"></i>
+              </button>
+              <button click.delegate="zoomOut(document)" class="btn btn-link">
+               <i class="fa fa-minus"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</template>
+
+/////////////////////////////////////////
+export class App {
+
+  constructor () {
+    // Set up some sensible defaults for documents to use with our repeater.
+    this.documents = [
+      {
+        url: 'dist/documents/one.pdf',
+        draftUrl: 'dist/documents/one.pdf',
+        pageNumber: 1,
+        scale: 1,
+        lastpage: 1
+      },
+
+      {
+        url: 'dist/documents/two.pdf',
+        draftUrl: 'dist/documents/two.pdf',
+        pageNumber: 1,
+        scale: 1,
+        lastpage: 1
+      }
+    ];
+  }
+
+  loadUrl (document) {
+    document.url = document.draftUrl;
+  }
+
+  firstPage (document) {
+    document.pageNumber = 1;
+  }
+
+  nextPage (document) {
+    if (document.pageNumber >= document.lastpage) return;
+    document.pageNumber += 1;
+  }
+
+  prevPage (document) {
+    if (document.pageNumber <= 1) return;
+    document.pageNumber -= 1;
+  }
+
+  lastPage (document) {
+    document.pageNumber = document.lastpage;
+  }
+
+  goToPage (document, page) {
+    if (page <= 0 || page > document.lastpage) return;
+    document.pageNumber = page;
+  }
+
+  zoomIn (document) {
+    document.scale = Number(document.scale) + 0.1;
+  }
+
+  zoomOut (document) {
+    document.scale = Number(document.scale) - 0.1;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+
+<template>
+  <require from="./pdf-document.css"></require>
+
+  <div ref="container" id.bind="fingerprint" class="pdf-container" scroll.trigger="pageHandler()" scroll.trigger2="renderHandler() & debounce:100">
+    <div repeat.for="page of lastpage" class="text-center">
+      <canvas id="${fingerprint}-page${(page + 1)}"></canvas>
+    </div>
+  </div>
+</template>
+
+import {customElement, bindable, inject, bindingMode, TaskQueue, Loader} from 'aurelia-framework';
+import {PDFJS} from 'pdfjs-dist';
+
+/* Due to a current limitation in Aurelia's templating, it's not possible to declare multiple
+methods in an event handler with separate binding behaviors. We work around this by duplicating
+the event name by adding these lines to our ViewModel. */
+import {SyntaxInterpreter} from 'aurelia-templating-binding';
+SyntaxInterpreter.prototype.trigger2 = SyntaxInterpreter.prototype.trigger;
+
+@customElement('pdf-document')
+@bindable({ name: 'url' })
+@bindable({ name: 'page', defaultValue: 1, defaultBindingMode: bindingMode.twoWay })
+@bindable({ name: 'lastpage', defaultValue: 1, defaultBindingMode: bindingMode.twoWay })
+@bindable({ name: 'scale', defaultValue: 1, defaultBindingMode: bindingMode.twoWay })
+@inject(TaskQueue, Loader)
+export class PdfDocument {
+  constructor (taskQueue, loader) {
+    PDFJS.workerSrc = loader.normalizeSync('pdfjs-dist/build/pdf.worker.js');
+    this.taskQueue = taskQueue;
+    this.worker = new PDFJS.PDFWorker();
+    this.fingerprint = generateUniqueDomId();
+    this.pages = [];
+    this.currentPage = null;
+    this.resolveDocumentPending;
+  }
+
+  detached () {
+    return this.documentPending
+      .then((pdf) => {
+        if (pdf) {
+          pdf.destroy();
+        }
+       this.worker.destroy();
+      })
+      .catch(() => {
+        this.worker.destroy();
+      })
+  }
+
+  urlChanged (newValue, oldValue) {
+    if (newValue === oldValue) return;
+
+    var promise = this.documentPending || Promise.resolve();
+    this.documentPending = new Promise((resolve, reject) => {
+      this.resolveDocumentPending = resolve.bind(this);
+    });
+
+    return promise
+      .then((pdf) => {
+        if (pdf) {
+          pdf.destroy();
+        }
+        return PDFJS.getDocument({ url: newValue, worker: this.worker });
+      })
+      .then((pdf) => {
+        this.lastpage = pdf.numPages;
+        pdf.cleanupAfterRender = true;
+        
+		for (var i = 0; i < pdf.numPages; i++) {
+          this.pages[i] = pdf.getPage(Number(i + 1))
+            .then((page) => {
+              var viewport = page.getViewport(this.scale);
+              var element = document.getElementById(`${this.fingerprint}-page${page.pageNumber}`);
+
+              this.taskQueue.queueMicroTask(() => {
+                element.height = viewport.height;
+                element.width = viewport.width;
+              });
+
+              return {
+                element: element,
+                page: page,
+                rendered: false,
+                clean: false
+              };
+            })
+        }
+
+        this.pages.forEach((page) => {
+          page.then((renderObject) => {
+            if (checkIfElementVisible(this.container, renderObject.element))
+            {
+              if (renderObject.rendered) return;
+              render(page, this.scale);
+            }
+          });
+        });
+
+        this.resolveDocumentPending(pdf);
+      });
+  }
+
+  pageChanged (newValue, oldValue) {
+    if (newValue === oldValue || isNaN(Number(newValue)) || Number(newValue) > this.lastpage || Number(newValue) < 0) {
+      this.page = oldValue;
+      return;
+    }
+
+    if (Math.abs(newValue - oldValue) <= 1) return;
+    this.pages[newValue - 1]
+      .then((renderObject) => {
+        this.container.scrollTop = renderObject.element.offsetTop;
+        render(this.pages[newValue - 1], this.scale);
+      });
+  }
+
+  scaleChanged (newValue, oldValue) {
+    if (newValue === oldValue || isNaN(Number(newValue))) return;
+
+  Promise.all(this.pages)
+      .then((values) => {
+        values.forEach((renderObject) => {
+          if (!renderObject) return;
+
+          var viewport = renderObject.page.getViewport(newValue);
+          renderObject.rendered = false;
+          this.taskQueue.queueMicroTask(() => {
+            renderObject.element.height = viewport.height;
+            renderObject.element.width = viewport.width;
+
+            if (renderObject.page.pageNumber === this.page) {
+              this.container.scrollTop = renderObject.element.offsetTop;
+            }
+          });
+        });
+        return values;
+      })
+
+      .then((values) => {
+        this.pages.forEach((page) => {
+          page.then((renderObject) => {
+            this.taskQueue.queueMicroTask(() => {
+              if (checkIfElementVisible(this.container, renderObject.element))
+              {
+                render(page, this.scale);
+              }
+            });
+          });
+        });
+      });
+  }
+
+  pageHandler () {
+    this.pages.forEach((page) => {
+      page.then((renderObject) => {
+        if ((this.container.scrollTop + this.container.clientHeight) >= renderObject.element.offsetTop
+          && (this.container.scrollTop <= renderObject.element.offsetTop))
+        {
+          this.page = renderObject.page.pageNumber;
+        }
+      });
+    });
+  }
+
+  renderHandler () {
+    Promise.all(this.pages)
+      .then((values) => {
+        values.forEach((renderObject) => {
+          if (!renderObject) return;
+
+          if (!checkIfElementVisible(this.container, renderObject.element))
+          {
+            if (renderObject.rendered && renderObject.clean) {
+              renderObject.page.cleanup();
+              renderObject.clean = true;
+            }
+
+            return;
+          }
+
+          this.taskQueue.queueMicroTask(() => {
+            if (renderObject.rendered) return;
+            render(renderObject, this.scale);
+          });
+        });
+     });
+  }
+}
+
+
+
+var generateUniqueDomId = function () {
+  var S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0)
+      .toString(16)
+      .substring(1);
+  };
+
+  return `_${S4()}${S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
+}
+
+var checkIfElementVisible = function (container, element) {
+  var containerBounds = {
+    top: container.scrollTop,
+    bottom: container.scrollTop + container.clientHeight
+  };
+
+  var elementBounds = {
+    top: element.offsetTop,
+    bottom: element.offsetTop + element.clientHeight
+  };
+
+  return (!((elementBounds.bottom < containerBounds.top && elementBounds.top < containerBounds.top)
+    || (elementBounds.top > containerBounds.bottom && elementBounds.bottom > containerBounds.bottom)));
+}
+
+var render = function (renderPromise, scale) {
+  return Promise.resolve(renderPromise)
+    .then((renderObject) => {
+      if (renderObject.rendered) return Promise.resolve(renderObject);
+      renderObject.rendered = true;
+
+      var viewport = renderObject.page.getViewport(scale);
+      var context = renderObject.element.getContext('2d');
+
+      return renderObject.page.render({
+        canvasContext: context,
+        viewport: viewport
+      })
+
+        .promise.then(() => {
+          return renderObject;
+        });
+  });
+};
