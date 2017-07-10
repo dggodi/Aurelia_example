@@ -1,7 +1,7 @@
 ﻿<template>
-    <require from =" ./resources/attributes/files-attribute"></require>
+    <!--<require from =" ./resources/attributes/files-attribute"></require>
     
-    <!--<label for="image_files">Load Multiple Image Files</label>
+    <label for="image_files">Load Multiple Image Files</label>
     <input type="file" id="image_files" multiple
           files="on-loaded.bind: multipleImageFilesLoadedCallback; file-filter.bind: 'image.*';" />
     <div id="loaded_images_files"></div>
@@ -34,12 +34,77 @@
 
     <label for="drag_and_drop_file">Drag and Drop images, WUTWUT!?</label>
     <div type="file" id="drag_and_drop_file"
-         files="on-loaded.bind: dragAndDropCallback; file-filter.bind: 'image.*'; allow-drop: true; hover-class: 'hover';"></div>-->
+         files="on-loaded.bind: dragAndDropCallback; file-filter.bind: 'image.*'; allow-drop: true; hover-class: 'hover';"></div>
 
     <label for="text_file">Load Single Text File</label>
-    <input type="file" id="text_file"
-           files="on-loaded.bind: textFileLoadedCallback_1; " />
 
+    <input type="file" id="text_file"
+           files="on-loaded.bind: textFileLoadedCallback; file-filter.bind: 'text.*|application.*'; read-as.bind: 'text';" />
+    <div id="loaded_text_file"></div>-->
+
+    <require from="./blob-to-url"></require>
+    <require from="./file-list-to-array"></require> 
+    <!--<input type="file" multiple accept="image/*" files.bind="selectedFiles" accept=".pdf" change.delegate="fileSelected($event)" />-->
+    <!--<input type="file" multiple files.bind="selectedFiles" accept=".pdf" change.delegate="fileSelected($event)" />
+    <div id="fileProgress_bar"><div class="filePercent">0%</div></div>
+    <button click.delegate="abort()"></button>
+    <div>
+        <ul>
+            <li repeat.for="file of selectedFiles | fileListToArray">
+                <img src.bind="file | blobToUrl" />
+                <h3>${file.name}: ${file.type} ${file.size / 1000} kb</h3>
+                <p>Last Modified: ${file.lastModifiedDate}</p>
+            </li>
+        </ul>
+    </div>-->
+    <!--<require from ="./resources/services/file-attribute"></require>
+    <input type="file" id="files" name="file" accept=".pdf" files="on-loaded.bind: pdfFileCallBack; maxFileSize.bind: 600000"/>
+    <button onclick="abortRead();">Cancel read</button>
+    <div id="progress_bar"><div class="percent">0%</div></div>-->
     
-    <button click.delegate="submit()">submit</button>
+    <!--<input type="file" id="text_file" accept=".pdf"
+           files="on-load.bind: pdfStartLoadCallback; on-loaded.bind: pdfFileLoadedCallback; max-file-size.bind: 60000000; on-error.bind: fileSizeErrorCallback; file-filter.bind: 'pdf.*'; 
+                 allow-drop: true; on-progress.bind: slowFileProgressCallback;" />
+    <div id="loaded_pdf_file"></div>
+    <div id="error-output"></div> 
+    <div id="progress_slow_file_container">
+        <div id="progress_slow_file"></div>
+    </div>
+    <div id="loaded_slow_file"></div>-->
+    <require from=" ./resources/services/file-attribute"></require>
+    <div class="container">
+        <div class="fileUpload btn btn-primary">
+            <span>Upload PDF Doc</span>
+            <input type="file" class="upload" multiple files="on-load.bind: pdfStartLoadCallback; on-loaded.bind: pdfFileLoadedCallback; max-file-size.bind: 60000000; on-error.bind: fileSizeErrorCallback;
+                     allow-drop: true; on-progress.bind: slowFileProgressCallback; read-as.bind: 'array';" />
+        </div>
+        
+        
+        <div class="fileUpload btn btn-primary">
+            <span>Upload PDF Doc</span>
+            <input type="file" id="text_file"
+                   files="on-load.bind: pdfStartLoadCallback; on-loaded.bind: pdfFileLoadedCallback; max-file-size.bind: 60000000; on-error.bind: fileSizeErrorCallback;
+                     allow-drop: true; on-progress.bind: slowFileProgressCallback; read-as.bind: 'array';" />
+        </div>
+        <div id="loaded_pdf_file"></div>
+        <div id="error-output"></div>
+        <div id="progress-container">
+            <div id="progress-file-container">
+                <div id="progress-file-container-bar"></div>
+            </div>
+            <div id="percent"></div>
+        </div>
+    </div>    
+    <div id="loaded_slow_file"></div>
+
+    <div>
+        <ul>
+            <li repeat.for="file of selectedFiles">
+
+                <h3>${file.name}: ${file.type} ${file.size / 1000} kb</h3>
+            </li>
+        </ul>
+    </div>
+
+    <button click.delegate="submit()">sumbit</button>
 </template>

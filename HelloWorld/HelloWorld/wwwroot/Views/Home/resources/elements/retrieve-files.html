@@ -1,0 +1,97 @@
+﻿<template>
+    <require from="../services/blob-to-url"></require>
+    <require from="../services/file-list-to-array"></require> 
+    <require from="../services/file-attribute"></require>
+
+    <div class="fileUpload btn btn-primary">
+        <span>Upload Word Doc</span>
+        <input type="file" class="upload" accept=".docx" multiple files="on-load.bind: startLoadCallback; 
+            on-loaded.bind: fileLoadedCallback; max-file-size.bind: 60000000; on-error.bind: fileSizeErrorCallback; allow-drop: true; 
+            on-progress.bind: fileProgressCallback; read-as.bind: 'array'; file-filter.bind: 'vnd.openxmlformats-officedocument.wordprocessingml.document.*'" />
+    </div>
+
+    <div class="fileUpload btn btn-primary">
+        <span>Upload PDF Doc</span>
+        <input type="file" class="upload" accept=".pdf" multiple files="on-load.bind: startLoadCallback; 
+            on-loaded.bind: fileLoadedCallback; max-file-size.bind: 60000000; on-error.bind: fileSizeErrorCallback;
+            allow-drop: true; on-progress.bind: fileProgressCallback; read-as.bind: 'array'; file-filter.bind: 'pdf.*'" />
+    </div>
+
+    <div class="fileUpload btn btn-primary">
+        <span>Upload Supporting Documents</span>
+        <input type="file" class="upload" accept=".png,.jpeg,.gif,.bmp,.pdf,.doc,.xls,.xlsx,.txt,.dox" multiple 
+            files="on-load.bind: startLoadOtherCallback; on-loaded.bind: fileLoadedOtherCallback;
+            max-file-size.bind: 60000000; on-error.bind: fileSizeErrorOtherCallback;
+            allow-drop: true; on-progress.bind: fileProgressOtherCallback; read-as.bind: 'array'; 
+            file-filter.bind: 'text|image|doc|pdf|png|jpeg|gif|bmp|ppt|excel|vnd.openxmlformats-officedocument.wordprocessingml.document.*'"/>        
+    </div>
+   
+
+    <div id="loaded_pdf_file"></div>
+    <div id="error-output"></div>   
+    <div id="loaded_slow_file"></div>
+
+    <div class="row">
+        <hr />
+        <div class="col-sm-3">
+            <p><label>Report Documents</label></p>
+        </div>
+        <div class="col-sm-9">
+            <div id="progress-container">
+                <div id="progress-file-container">
+                    <div id="progress-file-container-bar"></div>
+                </div>
+                <div id="percent"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="line-spacing">
+            <div repeat.for="file of selectedPdfFiles | fileListToArray">
+                <div class="col-sm-3">
+                    <h6><input type="checkbox" click.delegate="removeFile(file)" />${file.name}</h6>
+                    <ul>
+                        <li>${file.type}</li>
+                        <li>${file.size / 1000} kb</li>
+                    </ul>
+                </div>
+            </div>
+            <div repeat.for="file of selectedPdfFiles | fileListToArray">
+                <div class="col-sm-3">
+                    <h6><input type="checkbox" click.delegate="removeFile(file)" />${file.name}</h6>
+                    <ul>
+                        <li>${file.type}</li>
+                        <li>${file.size / 1000} kb</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <hr />
+        <div class="col-sm-3">
+            <p><label>Supporting Documents</label></p>
+        </div>
+        <div class="col-sm-9">
+            <div id="progress-container">
+                <div id="progress-file-container">
+                    <div id="progress-otherfile-container-bar"></div>
+                </div>
+                <div id="ohtherpercent"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="line-spacing">
+            <div repeat.for="file of selectedOtherFiles | fileListToArray">
+                <div class="col-sm-3">
+                    <h6><input type="checkbox" click.delegate="removeFile(file)" />${file.name}</h6>
+                    <ul>
+                        <li>${file.type}</li>
+                        <li>${file.size / 1000} kb</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

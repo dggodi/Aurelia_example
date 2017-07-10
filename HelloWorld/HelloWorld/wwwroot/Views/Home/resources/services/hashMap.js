@@ -34,6 +34,16 @@ export class HashMap {
         }
     }
 
+    getValue(obj) {
+        return set.obj;
+    }
+
+    update(key, value) {
+        if (this.contains(key) === true) {
+            set.obj = value;
+        }
+    }
+
     isEmpty() {
         return this.data.length === 0;
     }
