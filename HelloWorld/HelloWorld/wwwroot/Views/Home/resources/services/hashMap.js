@@ -19,6 +19,10 @@ export class HashMap {
         }
     }
 
+    put(key, value) {
+        this.set[key] = value;
+    }
+
     contains(key) {
         return this.set.hasOwnProperty(key);
     }
@@ -35,7 +39,7 @@ export class HashMap {
     }
 
     getValue(obj) {
-        return set.obj;
+        return this.set[obj];
     }
 
     update(key, value) {

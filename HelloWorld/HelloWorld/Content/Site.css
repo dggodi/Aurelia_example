@@ -1,36 +1,338 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+﻿
+
+/***********************************************************/
+.fileUpload {
+    position: relative;
+    overflow: hidden;
+    margin-right: 10px;
 }
 
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    .fileUpload input.upload {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        padding: 0;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        filter: alpha(opacity=0);
+    }
+
+#progress-container {
+    background-color: #777;
+    width: 300px;
+    height: 24px;
+    padding: 2px;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+    padding-right: 5px
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+#progress-file-container {
+    display: inline-block;
+    width: 250px;
+    height: 20px;
+    border: 3px solid #999;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+    margin-right: 5px; 
+
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+#progress-file-container-bar {
+    height: 14px;
+    width: 0%;
+    background-color: #00FF55;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+    transition: width .4s ease-in-out;
+}
+
+#percent {
+    display: inline-block;
+     z-index:10;
+    position: relative;
+    top: -25px;
+    left: 255px;
+    color: white;
+   
+}
+
+#progress-otherfile-container-bar {
+    height: 14px;
+    width: 0%;
+    background-color: #00FF55;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+    transition: width .4s ease-in-out;
+}
+
+#otherpercent {
+    display: inline-block;
+    z-index: 10;
+    position: relative;
+    top: -25px;
+    left: 255px;
+    color: white;
+}
+
+
+/***********************************************************/
+
+li {
+    list-style-type: none
 }
 
 #authors-modal {
     background-color: white;
-    position:fixed;
-    top:20%;
-    left:20%;
+    position: fixed;
+    top: 20%;
+    left: 20%;
     width: 600px;
     padding: 20px;
-    height:400px
+    height: 400px
 }
 
-#authors-modal ul {list-style-type:none}
+    #authors-modal ul {
+        list-style-type: none
+    }
+
+/*Upload Buttons*/
+.docxbtn {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    filter: alpha(opacity=0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    opacity: 0;
+    background-color: transparent;
+    color: transparent;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.pdfbtn {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 120px;
+    filter: alpha(opacity=0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    opacity: 0;
+    background-color: transparent;
+    color: transparent;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.supportingbtn {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    filter: alpha(opacity=0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    opacity: 0;
+    background-color: transparent;
+    color: transparent;
+    cursor: pointer;
+    cursor: hand;
+}
+
+
+
+ai-dialog-overlay.active {
+    opacity: 0.5 !important;
+    background-color: #000;
+}
+
+/******************************/
+
+.rbox {
+    border-radius: 15px;
+    border: 2px solid #8AC007;
+    padding: 10px;
+}
+
+
+/** pages *******************************/
+/*modal popups*/
+ai-dialog-overlay.active {
+    opacity: 0.5 !important;
+    background-color: #000;
+}
+
+#author-element {
+    color: black;
+    background-color: white;
+    position: fixed;
+    top: 20%;
+    left: 20%;
+    width: 600px;
+    padding: 20px;
+    border: 2px solid black;
+    height: 500px;
+}
+
+#user-space div {
+    margin-bottom: 20px;
+}
+
+.lg-line-seperation {
+    margin-bottom: 40px;
+}
+
+.error {
+    padding: 10px;
+    color: red
+}
+
+.line-spacing {
+    margin-bottom: 20px
+}
+
+.simple-checkbox {
+    margin: 7px 0px 0px 0px
+}
+
+#upload-space {
+    margin-top: 10px
+}
+
+input[type=radio] span {
+    margin: 0px 5px
+}
+
+.btn-small {
+    padding: 0px 10px
+}
+
+.data-scroll-bar {
+    overflow-y: auto;
+    height: 400px;
+}
+
+/*************************************/
+.input-group-addon {
+    min-width: 200px;
+    text-align: left;
+}
+
+.line-spacing {
+    margin-bottom: 20px
+}
+
+.lg-line-seperation {
+    margin-bottom: 40px
+}
+
+.btn-clear {
+    background-color: #999;
+    border-color: #333
+}
+
+    .btn-clear:hover {
+        background-color: #000;
+        border-color: #fff
+    }
+
+.btn {
+    padding-left: 20px;
+    padding-right: 20px
+}
+
+.file-upload-container {
+    border-top: 1px solid gray
+}
+
+ul {
+    list-style-type: none;
+}
+
+.btn-xs {
+    margin: 5px 2px 5px 10px;
+    padding: 1px 1px;
+    border: none
+}
+
+.btn-close {
+    color: red
+}
+
+.btn-default-close {
+    background-color: #555;
+    color: white
+}
+
+.btn-primary-close {
+    background-color: transparent;
+    color: #337ab7
+}
+
+.form-control[disabled]:focus,
+.form-control[readonly]:focus,
+fieldset[disabled] .form-control {
+    border-color: #ccc;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    background-color: #eee;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+/******************************/
+
+
+.rating-button,
+.rate {
+    line-height: 64px;
+    font-size: 32px;
+    color: #fff;
+    background-color: #555;
+}
+
+    .rating-button:hover {
+        cursor: pointer;
+        background-color: #333;
+    }
+
+    .rating-button span,
+    .rate {
+        width: 64px;
+        height: 64px;
+        border-radius: 64px;
+        text-align: center;
+    }
+
+.rating-button {
+    display: block;
+    margin: 0 auto;
+    padding: .5em 1em;
+    border: none;
+    border-radius: 4px;
+}
+
+    .rating-button span {
+        display: block;
+    }
+
+    .rating-button span,
+    .rate.selected {
+        background-color: #ffab13;
+    }
+
+.rate {
+    display: inline-block;
+    margin: 0 2px;
+    transition: all .1s ease-in-out;
+    opacity: 0.7;
+}
+
+    .rate.active {
+        opacity: 1;
+    }
+
+    .rate:hover {
+        transform: scale(1.4);
+        cursor: pointer;
+    }

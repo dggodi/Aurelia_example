@@ -1,5 +1,6 @@
 ﻿import { bindable, bindingMode } from 'aurelia-framework';
 import { HashMap } from "../services/hashMap"
+import { PdfDialog} from "../dialogs/pdf-dialog"
 
 let _selectedFiles = [];
 let _otherSelectedFiles = [];
@@ -15,12 +16,11 @@ function simulateSleep(milliseconds) {
     while (currentDate - date < milliseconds);
 }
 
-function clearFiles(file, map) {
-    for (var i = 0; i < file.length; i++) {
-        let fileName = file[i].name;
+function clearFiles(names, file, map) {
+    for (var i = 0; i < names.length; i++) {
+        let fileName = names[i].name;
         let fileObj = map.getValue(fileName);
-
-        if (fileObj.metadata.getChecked() === true) {
+        if (fileObj != null) {
             map.remove(fileName);
             file.splice(i, 1);
         }
@@ -32,35 +32,17 @@ export class RetrieveFiles {
     selectedFiles = [];
     otherSelectedFiles = [];
 
-    attached() {
+    selectedRemoveFiles = [];
+    selectedRemoveOtherFiles = [];
+
+    activate() {
         this.selectedFiles = _selectedFiles;
         this.otherSelectedFiles = _otherSelectedFiles;
     }
 
     clearSelectedDocs() {
-
-        clearFiles(this.selectedFiles, filesMap);
-        clearFiles(this.otherSelectedFiles, otherFilessMap);
-
-        //for (var i = 0; i < this.selectedFiles.length; i++) {
-        //    let fileName = this.selectedFiles[i].name;
-        //    let fileObj = filesMap.getValue(fileName);
-
-        //    if (fileObj.metadata.getChecked() === true) {
-        //        filesMap.remove(fileName);
-        //        this.selectedFiles.splice(i, 1);
-        //    }
-        //}
-
-        //for (var i = 0; i < this.otherSelectedFiles.length; i++) {
-        //    let fileName = this.otherSelectedFiles[i].name;
-        //    let fileObj = otherFilessMap.getValue(fileName);
-
-        //    if (fileObj.metadata.getChecked() === true) {
-        //        otherFilessMap.remove(fileName);
-        //        this.sotherSelectedFiles.splice(i, 1);
-        //    }
-        //}
+        clearFiles(this.selectedRemoveFiles, this.selectedFiles, filesMap);
+        clearFiles(this.selectedRemoveOtherFiles, this.otherSelectedFiles, otherFilessMap);
     }
 
     clearDocs() {
@@ -68,14 +50,19 @@ export class RetrieveFiles {
         filesMap.clear();
     }
 
-    fileCheckboxChanged(file) {
-        let obj = filesMap.getValue(file.name);
-        filesMap.update(obj.name, obj.metadata.setChecked());
-    }
-
     startLoadCallback() {
         $("#progress-file-container-bar").css("width", "0%");
         $("#percent").text("0%");
+    }
+
+    viewPdf() {
+        let obj = filesMap.getValue("pdf")
+        if (obj != null) {
+            this.dialogService.open({ viewModel: PdfDialog, model: obj.file })
+                .then(response => {
+                    console.log("modal could not be opened")
+                });
+        }
     }
 
     fileProgressCallback(file, amountLoaded, totalAmount) {
@@ -85,11 +72,17 @@ export class RetrieveFiles {
         simulateSleep(250);
     }
 
-    fileLoadedCallback(file, data, obj) {
+    fileLoadedCallback(file, data) {
         document.getElementById('loaded_pdf_file').innerHTML = data.length;
         $("#progress-file-container-barr").css("width", "100%");
-        _selectedFiles.push(obj);
-        filesMap.add(obj.name, { file: data, metadata: new File(obj) });
+        _selectedFiles.push(file);
+
+        let fileExt = file.name.split('.').pop();
+        let fileExtName = (fileExt === "pdf") ?"pdf" : "docx"
+
+        //filesMap.add(fileExtName, { file: data, metadata: new File(file.name, file.type, file.size) });
+
+        filesMap.add(fileExtName, data );
     };
 
     fileSizeErrorCallback(file, error) {
@@ -130,11 +123,10 @@ class File {
     file;
     checked;
 
-    constructor(name, size, type, checked) {
+    constructor(name, size, type) {
         this.name = name;
         this.size = size;
         this.type = type;
-        this.checked = checked;
     }
 
     get name() {
@@ -149,11 +141,15 @@ class File {
         return this.type;
     }
 
-    get checked() {
-        return this.checked;
+    set name(value) {
+        this.name = value;
     }
 
-    set checked(value) {
-        this.checked = value;
+    set size(value) {
+        this.size = value;
     }
+
+    set type(value) {
+        this.type = value;
+    } 
 }
