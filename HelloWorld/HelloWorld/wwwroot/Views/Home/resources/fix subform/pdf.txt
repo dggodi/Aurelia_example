@@ -1,3 +1,9 @@
+////////////////
+
+https://github.com/sitepoint-editors/aurelia-pdfjs
+https://github.com/grofit/aurelia-files
+
+////////////////////
 <template>
   <require from="resources/elements/pdf-document"></require>
 
