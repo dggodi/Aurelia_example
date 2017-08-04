@@ -1,0 +1,57 @@
+<template>
+  <require from="./retrieve-files"></require>
+  <retrieve-files removefiles.bind="removeFiles"></retrieve-files>
+  
+  
+  <button click.delegate="cancel()">cancel</button>
+</template>
+
+import { bindable, bindingMode } from 'aurelia-framework';
+
+export class App {
+  @bindable({ defaultBindingMode: bindingMode.twoWay }) removeFiles;
+  
+  attached(){
+    this.removeFiles = false
+  }
+  
+  cancel(){
+    this.removeFiles = true;  
+  }
+}
+
+<template>
+  <h1>${removeFiles}</h1>
+  <div>
+    <div repeat.for="file of files">${file}</div>
+  </div>
+  <button click.delegate="addFiles()">add</button>
+</template>
+
+import { bindable, bindingMode } from 'aurelia-framework';
+
+export class RetrieveFiles{
+  @bindable({ defaultBindingMode: bindingMode.twoWay }) removefiles;
+  
+  files = [];
+  count = 0;
+  
+  removefilesChanged(){
+    if(this.removefiles && this.files.length > 0){
+      console.log(this.removefiles);
+      this.removeAll();
+    }
+  }
+  
+  removeAll(){
+    console.log("removeAll");
+    this.files = []; 
+    this.count = 0;
+  }
+  
+  addFiles(){
+    this.count = this.count + 1;
+    this.files.push("file" + this.count)
+    this.removefiles = false;
+  }
+}
