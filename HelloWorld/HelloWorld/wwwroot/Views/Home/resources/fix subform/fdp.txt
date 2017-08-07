@@ -1,0 +1,542 @@
+
+
+body {
+    overflow-x: hidden;
+    padding: 15px;
+}
+
+.pdf-toolbar {
+    width: 300px;
+    text-align: center;
+    margin-left: -150px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 1.5em;
+    color: white;
+    transition: all 0.5s ease-in-out;
+}
+
+
+
+    .pdf-toolbar:hover, .pdf-toolbar:focus {
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+pdf-document {
+    display: block;
+    position: relative;
+}
+
+    pdf-document .pdf-container {
+        background-color: #bbb;
+        overflow: auto;
+        height: 600px;
+        width: 100%;
+    }
+
+    pdf-document canvas {
+        background-color: #fff;
+        border: 1px solid #000;
+        margin: 5px;
+    }
+	
+viewPdf() {
+        if (filesMap.contains("pdf")) {
+            let pdf = filesMap.getValue("pdf");
+            this.dialogService.open({ viewModel: PdfDialog, model: { data:pdf.file, parent:this.parent } })
+                .then(response => {
+                    console.log("modal could not be opened")
+                });
+        }
+    }	
+	
+// dialog
+<!--
+ Aurelia notes:
+    ${}                 - data bound to the view from the view-model or ts file
+    value.bind          - creates two-way bind for value attribute
+    model.bind          - creates two-way bind for the object or model
+    change.delegate     - jQuery change event
+    click.delegate      - jQuery click event
+-->
+
+<template>
+    <div id="author-element">
+        <ai-dialog>
+            <ai-dialog-header>
+                <button type="button" click.trigger="controller.cancel()" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 style="text-align: center">PDF Upload Confirmation</h3>
+            </ai-dialog-header>
+            <ai-dialog-body>
+               
+                <require from="./pdf-document"></require>
+                <section>
+                    <div class="row">
+                        <div class="col-md-12" repeat.for="document of documents">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <button click.delegate="loadUrl(document)" class="btn btn-primary btn-block btn-sm">
+                                        Load PDF URL
+                                    </button>
+                                    <button click.delegate="nextPage(document)" class="btn btn-link">
+                                        <span class="glyphicon glyphicon-circle-arrow-down"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+
+                                <pdf-document url.bind="document.url" 
+                                              page.bind="document.pageNumber" 
+                                              lastpage.bind="document.lastpage"
+                                              scale.bind="document.scale">
+                                </pdf-document>
+
+                                <div style="position: absolute; top: 2em; left: 50%; right: 50%;">
+                                    <div class="pdf-toolbar text-center">
+                                        <!--<button click.delegate="prevPage(document)" class="btn btn-link"
+                                                data-toggle="tooltip" data-placement="top" title="previous">
+                                            <span class="glyphicon glyphicon-circle-arrow-up"></span>
+                                        </button>
+                                        <button click.delegate="nextPage(document)" class="btn btn-link">
+                                            <span class="glyphicon glyphicon-circle-arrow-down"></span>
+                                        </button>
+                                        <input id="pagenumber" type="number" class="form-control" value.bind="document.pageNumber" />
+                                        / ${document.lastpage}-->
+                                        ${document.pageNumber} / ${document.lastpage}
+                                        <button click.delegate="zoomIn(document)" class="btn btn-link">
+                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                        </button>
+                                        <button click.delegate="zoomOut(document)" class="btn btn-link">
+                                            <span class="glyphicon glyphicon-minus-sign"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+                <br />
+                <input type="checkbox" />I have reviewed the document above<br />
+            </ai-dialog-body>
+
+            <ai-dialog-footer>
+                <button click.trigger="cancel()">Cancel</button>
+                <button click.trigger="ok()">Ok</button>
+            </ai-dialog-footer>
+
+        </ai-dialog>
+    </div>
+</template>
+
+import { autoinject} from "aurelia-framework"
+import { DialogController } from 'aurelia-dialog';
+
+@autoinject()
+export class PdfDialog{
+
+    documents = [
+    {
+        url: '',
+        draftUrl: '',
+        pageNumber: 1,
+        scale: .8,
+        lastpage: 1
+    }]
+    
+    constructor(private controller:DialogController) {}
+
+    activate(data:any) {
+        this.documents[0].draftUrl = data.data;
+    }
+
+    loadUrl(document) {
+        document.url = this.documents[0].draftUrl;
+    }
+
+    firstPage(document) {
+        document.pageNumber = 1;
+    }
+
+    nextPage(document) {
+        if (document.pageNumber >= document.lastpage) return;
+        document.pageNumber += 1;
+    }
+
+    prevPage(document) {
+        if (document.pageNumber <= 1) return;
+        document.pageNumber -= 1;
+    }
+
+    lastPage(document) {
+        document.pageNumber = document.lastpage;
+    }
+
+    goToPage(document, page) {
+        if (page <= 0 || page > document.lastpage) return;
+        document.pageNumber = page;
+    }
+
+    zoomIn(document) {
+        document.scale = Number(document.scale) + 0.1;
+    }
+
+    zoomOut(document) {
+        document.scale = Number(document.scale) - 0.1;
+    }
+
+    ok() {
+        this.controller.ok();
+    }
+
+    cancel() {
+        this.controller.cancel()
+    }
+}
+
+class PDFDocument {
+    url: string;
+    pageNumber: number = 1;
+    scale: number = 1;
+    lastpage: number = 1;
+}
+
+// pdf-document
+<template>
+
+    <div ref="container" id.bind="fingerprint" class="pdf-container" scroll.trigger="pageHandler()" scroll.trigger2="renderHandler() & debounce:100">
+        <div repeat.for="page of lastpage" class="text-center">
+            <canvas id="${fingerprint}-page${(page + 1)}"></canvas>
+        </div>
+    </div>
+</template>
+
+import { autoinject, bindable, bindingMode, Loader, TaskQueue} from 'aurelia-framework';
+import { SyntaxInterpreter } from 'aurelia-templating-binding';
+
+import "pdfjs-dist";
+
+function generateUniqueDomId(){
+    var S4 = function () {
+        return (((1 + Math.random()) * 0x10000) | 0)
+            .toString(16)
+            .substring(1);
+    };
+
+    return `_${S4()}${S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
+}
+
+function base64ToUint8Array(base64) {
+    var raw = atob(base64);
+    var uint8Array = new Uint8Array(new ArrayBuffer(raw.length));
+    for (var i = 0, len = raw.length; i < len; ++i) {
+        uint8Array[i] = raw.charCodeAt(i);
+    }
+    return uint8Array;
+}
+
+function checkIfElementVisible(container: HTMLDivElement, element: HTMLCanvasElement) {
+
+    var containerBounds = {
+        top: container.scrollTop,
+        bottom: container.scrollTop + container.clientHeight
+    };
+
+    var elementBounds = {
+        top: element.offsetTop,
+        bottom: element.offsetTop + element.clientHeight
+    };
+
+    return (!((elementBounds.bottom < containerBounds.top && elementBounds.top < containerBounds.top)
+        || (elementBounds.top > containerBounds.bottom && elementBounds.bottom > containerBounds.bottom)));
+}
+
+function render(renderPromise, scale) {
+
+    return Promise.resolve(renderPromise)
+        .then((renderObject) => {
+            if (renderObject.rendered) return Promise.resolve(renderObject);
+            renderObject.rendered = true;
+
+            var viewport = renderObject.page.getViewport(scale);
+            var context = renderObject.element.getContext('2d');
+
+            return renderObject.page.render({
+                canvasContext: context,
+                viewport: viewport
+            })
+                .promise.then(() => {
+                    return renderObject;
+                });
+        });
+};
+
+interface ISyntaxInterpreter extends SyntaxInterpreter1 {
+    trigger2(resources?: any, element?: any, info?: any):any;
+}
+
+class SyntaxInterpreter1 extends SyntaxInterpreter {
+    trigger2(resources?: any, element?: any, info?: any):any {
+        super.trigger(resources, element, info);
+    }
+}
+
+@autoinject()
+export class PdfDocument {
+    @bindable url
+    @bindable({ defaultValue: 1, defaultBindingMode: bindingMode.twoWay }) page
+    @bindable({ defaultValue: 1, defaultBindingMode: bindingMode.twoWay }) lastpage
+    @bindable({ defaultValue: 1, defaultBindingMode: bindingMode.twoWay }) scale
+
+    // **********************
+
+    pdfDoc: PDFDocumentProxy;
+    pageNum: number;
+
+    // **********************
+
+    currentpage: any = null;
+    resolveDocumentPending: any = null;
+    worker: any = null;
+    container: HTMLDivElement;
+
+    pages: any = [];
+
+    fingerprint: string;
+    test;
+    parent;
+
+    constructor(private loader: Loader, private taskQueue: TaskQueue) {
+        //PDFJS.workerSrc = loader.normalizeSync("pdfjs-dist/build/pdf.worker.js", "pdfjs-dist");
+        PDFJS.workerSrc = "./node_modules/pdfjs-dist/build/pdf.worker.js"
+        
+        this.fingerprint = generateUniqueDomId();
+        this.taskQueue = taskQueue;
+        this.test = true;
+    }
+
+    urlChanged(newValue: string, oldValue: string) {
+        if (newValue === oldValue) return;
+
+        let pdfData = base64ToUint8Array(newValue);
+        if (pdfData === undefined) return
+
+        let _fingerprint = this.fingerprint;
+        let _taskQueue: TaskQueue = this.taskQueue;
+        let _scale = this.scale;
+        let _container:HTMLDivElement = this.container;
+        let _pages = this.pages;
+        let _lastpage = this.lastpage;
+        let _resolveDocumentPending = this.resolveDocumentPending
+
+        let documentPending;
+        var promise = documentPending || Promise.resolve();
+        documentPending = new Promise((resolve, reject) => {
+            _resolveDocumentPending = resolve.bind(this);
+        })
+
+        return promise
+            .then((pdf: PDFDocumentProxy) => {
+                if (pdf) {
+                    pdf.destroy();
+                }
+                return PDFJS.getDocument(pdfData);
+            })
+            .then((pdf: PDFDocumentProxy) => {
+                _lastpage = pdf.numPages;
+                
+                for (var i = 0; i < pdf.numPages; i++) {
+                    _pages[i] = pdf.getPage(Number(i + 1))
+                        .then((page) => {
+                            var viewport = page.getViewport(_scale);
+                            var element = <HTMLCanvasElement>document.getElementById(`${_fingerprint}-page${page.pageNumber}`);
+
+                            _taskQueue.queueMicroTask(() => {
+                                element.height = viewport.height;
+                                element.width = viewport.width;
+                            });
+
+                            var obj = {
+                                element: element,
+                                page: page,
+                                rendered: false,
+                                clean: false
+                            };
+
+                            return new PageObject(obj);
+                        })
+                }
+
+                console.log(_pages.length);
+
+                _pages.forEach((page) => {
+                    page.then((renderObject: PageObject) => {
+                        if (checkIfElementVisible(_container, renderObject.element)) {
+                            if (renderObject.rendered) return;
+                            render(page, _scale);
+                        }
+                    });
+                });
+            });
+    }
+
+    pageChanged(newValue, oldValue) {
+        if (newValue === oldValue || isNaN(Number(newValue)) || Number(newValue) > this.lastpage || Number(newValue) < 0) {
+            this.page = oldValue;
+            return;
+        }
+
+        if (Math.abs(newValue - oldValue) <= 1) return;
+
+        let _scale = this.scale;
+        let _pages = this.pages;
+        let _container: HTMLDivElement = this.container;
+        let _taskQueue: TaskQueue = this.taskQueue;
+
+        this.pages[newValue - 1]
+            .then((renderObject) => {
+                _container.scrollTop = renderObject.element.offsetTop;
+                render(_pages[newValue - 1], _scale);
+            });
+    }
+
+    lastpageChanged() {
+        console.log("PdfDocument :: urlChanged" + this.lastpage);
+    }
+
+    scaleChanged(newValue, oldValue) {
+        if (newValue === oldValue || isNaN(Number(newValue))) return;
+
+        let _pages = this.pages;
+        let _page = this.page
+        let _container: HTMLDivElement = this.container;
+        let _scale = this.scale;
+        let _taskQueue: TaskQueue = this.taskQueue;
+
+        Promise.all(_pages)
+            .then((values) => {
+                values.forEach((renderObject: PageObject) => {
+                    if (!renderObject) return;
+
+                    var viewport = renderObject.page.getViewport(newValue);
+
+                    renderObject.rendered = false;
+
+                    _taskQueue.queueMicroTask(() => {
+                        renderObject.element.height = viewport.height;
+                        renderObject.element.width = viewport.width;
+
+                        if (renderObject.page.pageNumber === _page) {
+                            this.container.scrollTop = renderObject.element.offsetTop;
+                        }
+                    });
+                });
+
+                return values;
+            })
+            .then((values) => {
+                _pages.forEach((page) => {
+                    page.then((renderObject) => {
+                        _taskQueue.queueMicroTask(() => {
+                            if (checkIfElementVisible(_container, renderObject.element)) {
+                                render(page, _scale);
+                            }
+                        });
+                    });
+                });
+            });
+    }
+
+    pageHandler() {
+
+        let _pages = this.pages;
+        let _container: HTMLDivElement = this.container;
+        let _scale = this.scale;
+
+        this.pages.forEach((page) => {
+            page.then((renderObject: PageObject) => {
+                if ((_container.scrollTop + _container.clientHeight) >= renderObject.element.offsetTop
+                    && (_container.scrollTop <= renderObject.element.offsetTop)) {
+                    page = renderObject.page.pageNumber;
+                }
+            });
+        });
+    }
+
+    renderHandler() {
+
+        let _pages = this.pages;
+        let _container: HTMLDivElement = this.container;
+        let _scale = this.scale;
+        let _taskQueue = this.taskQueue;
+
+        Promise.all(_pages)
+            .then((values) => {
+                values.forEach((renderObject: PageObject) => {
+                    if (!renderObject) return;
+
+                    if (!checkIfElementVisible(_container, renderObject.element)) {
+                        if (renderObject.rendered && renderObject.clean) {
+                            renderObject.page.cleanup();
+                            renderObject.clean = true;
+                        }
+
+                        return;
+                    }
+
+                    _taskQueue.queueMicroTask(() => {
+                        if (renderObject.rendered) return;
+                        render(renderObject, _scale);
+                    });
+                });
+            });
+    }
+}
+
+class PageObject {
+    element;
+    page;
+    rendered;
+    clean;
+
+    constructor(data) {
+        this.element = data.element;
+        this.page = data.page;
+        this.rendered = data.rendered;
+        this.clean = data.clean;
+    }
+}
+
+    //urlChanged(newValue:string) {
+    //    let pdfData = newtest();
+    //    let pdfData = base64ToUint8Array(newValue);
+
+    //    if (pdfData === undefined) return
+
+    //    let pdfData = newValue;
+    //    var pageNumber = 1;
+    //    PDFJS.getDocument(pdfData).then(function (pdf) {
+    //        var pageNumber = 1;
+    //        pdf.getPage(pageNumber).then(function (page) {
+    //            console.log('PDF loaded');
+
+    //            var scale = 1.5;
+    //            var viewport = page.getViewport(scale);
+
+    //            var canvas = <HTMLCanvasElement>document.getElementById('the-canvas');
+    //            var context = <CanvasRenderingContext2D>canvas.getContext('2d');
+    //            canvas.height = viewport.height;
+    //            canvas.width = viewport.width;
+
+    //            var renderContext = {
+    //                canvasContext: context,
+    //                viewport: viewport
+    //            };
+
+    //            var renderTask = page.render(renderContext);
+    //            renderTask.then(function () {
+    //                console.log('Page rendered');
+    //            });
+    //        });
+    //    })
+    //}
+
