@@ -1,0 +1,621 @@
+<template>
+
+  <section class="container form-inline line-spacing">
+    <require from="./retrieve-report-type"></require>
+    <retrieve-report-type utility.bind="dataUtility"
+      switchforms.call="switchForms()"></retrieve-report-type>
+  </section> 
+
+<section class="container" show.bind="showGenralInfo">
+  <select id="business" multiple value.bind="selectedBusinesses">
+    <option value.bind="null">Choose</option>
+    <option repeat.for="businessCapability of businessCapabilities" 
+       value.bind="businessCapability" click.delegate="addBusiness(businessCapability)">
+        ${businessCapability}
+    </option> 
+  </select>
+  
+  <div class="col-sm-7 line-spacing" show.bind="showFinalReviewer">
+  <div class="input-group">
+  <span class="input-group-addon" css.bind="isError(ctrl[fields.BUSINESS].success)">
+  Final Reviewer
+  <span if.bind="ctrl[fields.FINAL_REVIEWER].required" class="error">*</span>
+  </span>
+  <input id="finalReviewer" type="text" class="form-control" value.bind="finalReviewer" style="background-color:white; -webkit-box-shadow: none; box-shadow: none;" readonly />
+  </div>
+  </div>
+  
+  <div show.bind="showELN">
+    <div class="input-group line-spacing">
+      <span class="input-group-addon" css.bind="isError(ctrl[fields.ELN].success)">
+        ELN Project
+        <i class='fa fa-spin fa-spinner' if.bind="loadingSpinner"></i>
+      </span>
+      <select id="ELN" class="form-control" value.bind="selectedELNProject" 
+            change.delegate="addELN()">
+        <option model.bind="null">Select ELN Project</option>
+        <option model.bind="null" disabled></option>
+        <option repeat.for="elnProject of elnProjects" model.bind="elnProject" 
+            click.delegate="addELN()">
+        ${elnProject.ProjectName}
+        </option>
+      </select>
+    </div>
+  </div>
+  
+  <div show.bind="showExportControl">
+    <div class="input-group line-spacing">
+      <span class="input-group-addon" css.bind="isError(ctrl[fields.EXPORT_CONTROL].success)">
+      Export Control Status
+      <span if.bind="ctrl[fields.EXPORT_CONTROL].required" class="error">*</span>
+      </span>
+      <select id="exportControl" class="form-control" 
+           value.bind="selectedExportStatus" change.delegate="addExportControl()"> 
+        <option model.bind="null">Choose</option>
+        <option model.bind="null" disabled></option>
+        <option repeat.for="exportControl of exportControls" value.bind="exportControl">
+        ${exportControl}
+        </option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="input-group line-spacing" show.bind="showDatabookNumber">
+    <span css.bind="isError(ctrl[fields.DATABOOK_NUM].success)" class="input-group-addon">
+      Databook Number
+    <span show.bind="ctrl[fields.DATABOOK_NUM].required" class="error">*</span>
+    </span>
+    <input id="databookNumber" type="text" class="form-control" placeholder="123456789" 
+       value.bind="databookNumber & debounce:1000" />
+  </div>
+  
+  <div class="input-group line-spacing" show.bind="showReportNumber">
+    <span css.bind="isError(ctrl[fields.REPORT_NUM].success)" class="input-group-addon">
+      Report Number
+    <span show.bind="ctrl[fields.REPORT_NUM].required" class="error">*</span>
+    </span>
+    <input id="reportNumber" type="text" class="form-control" 
+       value.bind="reportNumber & debounce:1000" />
+  </div>
+  
+  <div class="input-group line-spacing" show.bind="showReportDate">
+    <span css.bind="isError(ctrl[fields.REPORT_DATE].required)" class="input-group-addon">
+    Report Date
+    <span show.bind="required" class="error">*</span>
+    </span>
+    <input id="reportDate" type="text" class="form-control" value.bind="reportDate"/>
+  </div>
+  
+  <div show.bind="showLTD">
+    <div class="input-group" style="margin-left:-11px">
+      <span class="input-group-addon" css.bind="isError(ctrl[fields.LTD].success)" >
+        <input id="LTD" type="radio" checked.bind="LTDChecked">&nbsp;Limited Distribution<span if.bind="ctrl[fields.LTD].required" class="error">*</span>
+      </span>
+      <span if.bind="LTDChecked" css.bind="success" class="input-group-addon">LTD Reason<span if.bind="required" class="error">*</span></span>
+        <select id="ltdReason" if.bind="LTDChecked" class="form-control" value.bind="selectedBusinessLTDOption" change.delegate="changeLTDCurrentBrowsers($event)">
+          <option value.bind="null">Select One</option>
+          <option disabled></option>
+          <option repeat.for="LTDOptionReason of LTDOptionReasons" value.bind="LTDOptionReason" click.delegate="changeLTDIE()">
+          ${LTDOption}
+          </option>
+        </select>
+    </div>
+  
+</section>
+
+<section>
+  <div class="row">
+	<div class="col-sm-7 line-spacing" show.bind="showTitle">
+		<div class="input-group">
+		<span css.bind="isError(ctrl[fields.TITLE].success)" class="input-group-addon">
+		Title
+		<span if.bind="ctrl[fields.TITLE].required" class="error">*</span>
+		</span>
+		<textarea class="form-control" value.bind="title" placeholder="Enter Title"></texarea
+		</div>
+	</div>
+</div>
+</section>
+
+  <section><button click.delegate="cancel">Cancel</button></section>
+
+</template> 
+
+
+import { bindable, bindingMode } from 'aurelia-framework';
+import { DataFormUtility, FieldList, ValidateForm, ReportTypes} from "./dataFormUtility"
+
+export class App {
+  @bindable({ defaultBindingMode: bindingMode.twoWay }) showReport;
+  
+  
+  businessCapabilities = [
+    "Business A","Business B","Business C" 
+  ];
+  
+  elnProjects = [
+    {ProjectName:"Project A", Status:"yes"},
+    {ProjectName:"Project B", Status:"no"}
+  ];
+  
+  exportControls = ["yes", "no"];
+  
+  LTDoptions = ["Yes", "No"];
+
+    LTDOptionReasons = [
+        "Third party legal obligations",
+        "Trade Secretes"
+    ];
+  
+  dataUtility = new DataFormUtility();
+  fields = FieldList;
+  
+  selectedBusinesses = [];
+  
+  finalReviewer
+  selectedELNProject
+  
+  attached() {
+        $('#ELN').append('<option disabled></option>');
+        $('#ELN').append('<option value="none">Project Does not Match Report</option>');
+    }
+  
+  addBusiness(){
+    this.finalReviewer = "David"
+    this.dataUtility.setFlow(FieldList.FINAL_REVIEWER, true);
+    switch (this.dataUtility.getReportType()) { 
+      case ReportTypes.CRI:
+        this.dataUtility.setFlow(FieldList.ELN, true);
+        break;
+
+      case ReportTypes.PROJECT_LEARNING:
+        this.dataUtility.setFlow(FieldList.EXPORT_CONTROL, true);     
+        break;
+
+      case ReportTypes.TECH_LEARNING:
+        this.dataUtility.setFlow(FieldList.REPORT_DATE, true); 
+        break;
+    }
+
+  }
+  
+  addELN(){
+    if(this.selectedELNProject != null){
+      this.dataUtility.setFlow(FieldList.EXPORT_CONTROL, true);
+    }
+  }
+  
+  addExportControl(){
+    if(this.selectedExportStatus != null){
+      switch(this.dataUtility.getReportType()){
+        case ReportTypes.CRI:
+          this.dataUtility.setFlow(FieldList.DATABOOK_NUM, true);
+          break;
+          
+        case ReportTypes.PROJECT_LEARNING:
+          this.dataUtility.setFlow(FieldList.REPORT_DATE, true);
+          break;
+      }
+    }
+  }
+  
+  changeLTDIE() {
+        this.changeStatus(this.selectedBusinessLTDOption);
+    }
+
+    changeLTDCurrentBrowsers() {
+        this.changeStatus(this.selectedBusinessLTDOption);
+    }
+
+    changeLTD(ltdReason) {
+        if (ltdReason != null) {
+            this.utility.setFlow(FieldList.LTD_REASON, true);
+        }
+        else {
+            this.utility.setFlow(FieldList.LTD_REASON, false);
+        }
+    }
+  
+  @bindable databookNumber
+  databookNumberChanged(newValue){
+    if ( (ValidateForm.isDataBookNumber(newValue)) ) {
+      this.dataUtility.setSuccess(FieldList.DATABOOK_NUM, true);
+      this.dataUtility.setFlow(FieldList.REPORT_NUM, true);
+    } 
+    else {
+      this.dataUtility.setSuccess(FieldList.DATABOOK_NUM, false);
+      this.dataUtility.setFlow(FieldList.REPORT_NUM, false);
+    }
+  }
+  
+  @bindable reportNumber;
+  reportNumberChanged(newValue) {
+        if ( !(ValidateForm.isEmpty(newValue)) ) {
+            this.dataUtility.setFlow(FieldList.REPORT_DATE, true);
+            this.dataUtility.setSuccess(FieldList.REPORT_NUM, true);
+        }
+        else {
+            this.dataUtility.setSuccess(FieldList.REPORT_NUM, false);
+            this.dataUtility.setFlow(FieldList.REPORT_DATE, false);
+        }
+  }
+  
+  @bindable reportDate;
+    reportDateChanged(newValue) {
+        if ( !(ValidateForm.isEmpty(newValue)) ){
+            if (this.dataUtility.getReportType() == ReportTypes.CRI) {
+                this.dataUtility.setFlow(FieldList.LTD, true);
+                this.dataUtility.setSuccess(FieldList.REPORT_DATE, true);
+            }
+            else {
+                this.dataUtility.setSuccess(FieldList.REPORT_DATE, true);
+                this.generalInformation = true;
+            }
+        } else {
+            if (this.dataUtility.getReportType() == ReportTypes.CRI) {
+                this.dataUtility.setFlow(FieldList.LTD, false);
+                this.dataUtility.setSuccess(FieldList.REPORT_DATE, false);
+            }
+            else {        
+               this.dataUtility.setFlow(FieldList.REPORT_DATE, false);
+                this.generalInformation = false;
+            }
+            this.dataUtility.setSuccess(FieldList.REPORT_DATE, false);          
+        }
+    }
+    
+    @bindable title;
+    titleChanged(newValue) {
+        if (!(ValidateForm.isEmpty(newValue))) {
+            this.ctrl[FieldList.AUTHOR].flow = this.dataUtility.setFlow(FieldList.AUTHOR, true);
+            this.ctrl[FieldList.NON_AUTHOR].flow = this.dataUtility.setFlow(FieldList.NON_AUTHOR, true);
+            this.ctrl[FieldList.TITLE].success = this.dataUtility.setSuccess(FieldList.TITLE, true);
+        }
+        else {
+            this.ctrl[FieldList.AUTHOR].flow = this.dataUtility.setFlow(FieldList.AUTHOR, false);
+            this.ctrl[FieldList.NON_AUTHOR].flow = this.dataUtility.setFlow(FieldList.NON_AUTHOR, false);
+            this.ctrl[FieldList.TITLE].success = this.dataUtility.setSuccess(FieldList.TITLE, false);
+        }
+    }
+  
+  cancel(){
+    
+  }
+  
+ switchForms(){
+    console.log("switchForms");
+
+      for (let i in FieldList) { 
+        let id = this.dataUtility.getID(FieldList[i]); 
+        if(this.dataUtility.getNone(FieldList[i])){
+          this.dataUtility.setFlow(FieldList[i], false);   
+        }
+        else{ 
+          if($("#" + id).is("input")){  
+            if($("#" + id).attr("type") === "text"){
+              console.log("text:  " + id + "  " + ($("#" + id).val() === ""));
+              if($("#" + id).val() === "")
+                this.dataUtility.setFlow(FieldList[i], false); 
+              else
+                this.dataUtility.setFlow(FieldList[i], true);
+            }
+            else if ($("#" + id).attr("type") == "radio"){
+              console.log("radio:  " + id + !$("#" + id).is(":checked"));
+              if(!$("#" + id).is(":checked"))
+                this.dataUtility.setFlow(FieldList[i],false);
+              else
+                this.dataUtility.setFlow(FieldList[i],true);
+            } 
+          } 
+          else if($("#" + id).is("select")){
+            console.log("select:  " + id + "  " + ($("#" + id)[0].selectedIndex <= 0));
+            if ($("#" + id)[0].selectedIndex <= 0)
+              this.dataUtility.setFlow(FieldList[i], false);
+            else
+              this.dataUtility.setFlow(FieldList[i], true);
+          }
+          else{
+            console.log("else:  " + id + "  " + ($("#" + id).val() === ""));
+          }
+        } 
+      }
+      
+      this.showReport = true
+      
+  }
+  
+  get showGenralInfo() {
+    return this.showReport;
+  }
+  
+  get showDatabookNumber(){
+    return this.dataUtility.getFlow(FieldList.DATABOOK_NUM);
+  }
+  
+  get showELN() {
+    return this.dataUtility.getFlow(FieldList.ELN);
+  }
+  
+  get showExportControl(){
+    return this.dataUtility.getFlow(FieldList.EXPORT_CONTROL); 
+  }
+  
+  get showFinalReviewer(){
+    return this.dataUtility.getFlow(FieldList.FINAL_REVIEWER);
+  }
+  
+  get showReportDate(){
+    if(ReportTypes.TECH_LEARNING === this.dataUtility.getReportType())
+      return true
+    
+    return this.dataUtility.getFlow(FieldList.REPORT_DATE);
+  }
+  
+  get showReportNumber(){
+      return this.dataUtility.getFlow(FieldList.REPORT_NUM);
+  }
+  
+  get showLTD(){
+      return this.dataUtility.getFlow(FieldList.LTD);
+  }
+  
+  get showTitle(){
+      return this.dataUtility.getFlow(FieldList.TITLE);
+  }
+}
+
+
+
+
+
+
+
+<template>
+    <div class="form-group">
+        <h3>
+            <label for="reports">Submission Form &nbsp;&nbsp;&nbsp;</label>
+            <select class="form-control" id="reports" value.bind="selectedReport" change.delegate="changeReportCurrentBrowsers($event)">
+                <option model.bind="null">Choose A Report Type</option>
+                <option disable>-------------------------</option>
+                <option repeat.for="reportSelection of reportSelections" model.bind="reportSelection" click.delegate="changeReportIE(reportSelection)">
+                    ${reportSelection.name}
+                </option>
+            </select>
+        </h3>
+    </div>
+</template>
+
+// retrieve-report-type
+import { bindable, bindingMode } from "aurelia-framework";
+import { FieldList, ReportTypes} from "./dataFormUtility"
+
+const REQUIRED = 0;
+const OPTIONAL = 1;
+const NONE = 2;
+
+let formControls = {
+    //                   0          1        2         3        4           5       6           7       8           9       10          11       12       13
+    cri:             [REQUIRED, REQUIRED, REQUIRED, REQUIRED, OPTIONAL, REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED, OPTIONAL, REQUIRED, OPTIONAL],
+    projectLearning: [REQUIRED, REQUIRED, NONE,     REQUIRED, NONE,     NONE,     REQUIRED, NONE,     NONE,     REQUIRED, REQUIRED, OPTIONAL, REQUIRED, OPTIONAL],
+    technicalMeeting:[OPTIONAL, OPTIONAL, NONE,     NONE,     NONE,     NONE,     REQUIRED, NONE,     NONE,     REQUIRED, REQUIRED, OPTIONAL, REQUIRED, OPTIONAL]
+
+};
+
+export class RetrieveReportType {
+
+    @bindable({ defaultBindingMode: bindingMode.twoWay }) showreport;
+    @bindable utility;
+    @bindable switchforms;
+
+    reportSelections = [
+        { id: 0, name: 'CRI' },
+        { id: 1, name: 'Project Learnings' },
+        { id: 2, name: 'Technical Meetings' }
+    ];
+
+    changeReportIE(report) {
+        this.changeReport(report);
+    }
+
+    changeReportCurrentBrowsers(event) {
+        this.changeReport(this.selectedReport);
+    }
+
+    changeReport(report) {
+        this.reset();
+        if (report != null) {
+            this.showreport = true;
+            switch (report.id) {
+                case ReportTypes.CRI:
+                    this.initFormData(formControls.cri);
+                    this.setFormFlow(FieldList.BUSINESS, true);
+                    break;
+
+                case ReportTypes.PROJECT_LEARNING:
+                    this.initFormData(formControls.projectLearning)
+                    this.setFormFlow(FieldList.BUSINESS, true);
+                    break;
+
+                case ReportTypes.TECH_LEARNING:
+                    this.initFormData(formControls.technicalMeeting)
+                    this.setFormFlow(FieldList.REPORT_DATE, true);
+                    break;
+            }
+
+            this.utility.setReportType(report);
+            this.switchforms();
+        }
+    }
+
+    setFormFlow(key, value) {
+        this.utility.setFlow(key, value);
+    }
+
+    initFormData(obj) {
+        for (let i in FieldList) {
+            switch (obj[FieldList[i]]) {
+                case REQUIRED: this.utility.setRequired(FieldList[i], true);
+                    break;
+
+                case OPTIONAL: this.utility.setRequired(FieldList[i], false);
+                    break;
+
+                case NONE: this.utility.setNone(FieldList[i], true);
+                    break;
+            }
+        }
+    }
+
+    reset() {
+        this.utility.reset();
+    }
+
+}
+
+// dataFormUtililty
+import { transient } from 'aurelia-framework';
+
+let ElementData = [
+    { title: "Business / Capability", id: "business", key: "BUSINESS", success: true, required: true, none: false, flow:false},
+    { title: "Final Reviewer", id: "finalReviewer", key: "FINAL_REVIEWER", success: true, required: true, none: false, flow: false },
+    { title: "ELN Project", id: "ELN", key: "ELN", success: true, required: true, none: true, flow: false },
+    { title: "Export Control", id: "exportControl", key: "EXPORT_CONTROL", success: true, required: true, none: false, flow: false },
+    { title: "Databook Number", id: "databookNumber", key: "DATABOOK_NUM", success: true, required: true, none: false, flow: false },
+    { title: "Report Number", id: "reportNumber", key: "REPORT_NUM", success: true, required: true, none: false, flow: false },
+    { title: "Report Date", id: "reportDate", key: "REPORT_DATE", success: true, required: true, none: false, flow: false },
+    { title: "LTD Limited Distribution", id: "LTD", key: "LTD", success: true, required: true, none: false, flow: false },
+    { title: "LTD Limited Distribution Reason", id: "ltdReason", key: "LTD_RESAON", success: true, required: true, none: false, flow: false },
+    { title: "Report Title", id: "title", key: "TITLE", success: true, required: true, none: false, flow: false },
+    { title: "Dow Author", id: "dowAuthors", key: "AUTHOR", success: true, required: true, none: false, flow: false },
+    { title: "Non Dow Author", id: "nonDowAuthors", key: "NON_AUTHOR", success: true, required: true, none: false, flow: false },
+    { title: "Report Abstract", id: "abstract", key: "ABSTRACT", success: true, required: true, none: false, flow: false },
+    { title: "Distribution List", id: "diList", key: "DI_LIST", success: true, required: true, none: false, flow: false }
+];
+
+export var FieldList = {
+    BUSINESS: 0,
+    FINAL_REVIEWER: 1,
+    ELN: 2,
+    EXPORT_CONTROL: 3,
+    DATABOOK_NUM: 4,
+    REPORT_NUM: 5,
+    REPORT_DATE: 6,
+    LTD: 7,
+    LTD_REASON: 8,
+    TITLE: 9,
+    AUTHOR: 10,
+    NON_AUTHOR: 11,
+    ABSTRACT: 12,
+    DISTRIBUTION_LIST: 13
+};
+
+export var ReportTypes = {
+    CRI: 0,
+    PROJECT_LEARNING: 1,
+    TECH_LEARNING: 2
+}
+
+@transient()
+export class DataFormUtility {
+
+    elementData;
+    reportType;
+    reportDescription;
+
+    constructor() {
+        this.elementData = ElementData;
+        this.reportType = "";
+    }
+
+    getID(obj) {
+        return this.elementData[obj].id;
+    }
+
+    getElementData() {
+        return this.elementData;
+    }
+
+    getFlow(obj) {
+        return this.elementData[obj].flow;
+    }
+
+    getNone(obj) {
+        return this.elementData[obj].none;
+    }
+
+    getReportType() {
+       return this.reportType; 
+    }
+
+    getReportDescription() {
+        return this.reportDescription;
+    }
+
+    getRequired(obj) {
+        return this.elementData[obj].required;
+    }
+
+    getSuccess(obj) {
+        return this.elementData[obj].success; 
+    }
+
+    getTitle(obj) {
+        return this.elementData[obj].title;
+    }
+
+    setNone(obj, value) {
+        this.elementData[obj].none = value;
+    }
+
+    setFlow(obj, value) {
+        this.elementData[obj].flow = value;
+    }
+
+    setReportType(report) {
+        this.reportType = report.id;
+        this.reportDescription = report.name;
+    }
+
+    setSuccess(obj, value) {
+        this.elementData[obj].success = value;
+        return this.elementData[obj].success
+    }
+
+    setRequired(obj, value) {
+        this.elementData[obj].required = value;
+        return this.elementData[obj].required;
+    }
+
+    reset() {
+        for (let i in FieldList) {
+            this.setRequired(FieldList[i], true);
+            this.setSuccess(FieldList[i], true);
+            this.setNone(FieldList[i], false);
+            this.setFlow(FieldList[i], false);
+        }
+
+    }
+
+    resetForm() {
+        for (let i in FieldList) {
+            this.setRequired(FieldList[i], true);
+            this.setSuccess(FieldList[i], true);
+            this.setFlow(FieldList[i], false);
+        }
+
+    }
+}
+
+export class ValidateForm {
+    static isEmpty(str) {
+        return (!str);
+    }
+
+    static isEmptyContainer(obj) {
+        return obj.length == 0;
+    }
+
+    static isDataBookNumber(obj){
+        return obj.match(/^\d{9}$/);
+    }
+}
