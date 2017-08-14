@@ -1,0 +1,98 @@
+// shell.html
+<require from="./css/select2.min.css"></require>
+
+// datepicker
+attached() {
+    $(this.element).datepicker({maxDate: 1})
+      .on('change', e => fireEvent(e.target, 'input'));  
+}
+
+// retrieve-reviewer.ts
+	removeReviewer(business, reviewer) {
+		let userid: string = reviewer.split("(").pop().slice(0, -1);
+
+		if (business === this.map.getValue(userid)) {
+			this.map.remove(userid);
+			this.reviewer = "";
+		}
+	}
+
+    resetReviewer() {
+        this.utility.setSuccess(FieldList.BUSINESS, false);
+        this.utility.setSuccess(FieldList.FINAL_REVIEWER, false);
+        this.reviewer = "";
+    }
+
+// reviewer-dialog.html
+	${finalReviewer.DisplayName} (${finalReviewer.DowId})
+
+// reviewer-dialog.ts
+	created() {
+		.then(user => {
+			this.populateUserData(user, tmp)
+		})
+	}
+
+    populateUserData(data, business) {
+        let userIDs = data;
+        this.userData.searchById(userIDs)
+            .then(obj => {
+                var tmp = obj;
+                this.data.map.put(tmp.DowId, business)
+                this.finalReviewers.push(tmp);
+            })
+            .catch(error => {
+                console.log("error getting user data ");
+            });
+    }
+
+// retrieve-files
+<div id="error-output"></div>
+fileLoadedCallback(file, data:string, loadfiles) {
+	filesMap.put(fileExt, { file: base64, metadata: obj });
+
+    for (var i = 0; i < _selectedFiles.length; i++) {
+        let str = _selectedFiles[i].type;
+        if (str.localeCompare(file.type) === 0) 
+            _selectedFiles.splice(i, 1);      
+    }
+}
+
+
+// pdf-attribute
+import { autoinject, bindable, customAttribute } from "aurelia-framework"
+
+@customAttribute("pdf")
+@autoinject()
+export class PdfAttribute {
+    @bindable pagescroll;
+    
+
+    constructor(private element: Element) {
+
+    }
+
+    attached(){
+        this.element.addEventListener('scroll', () => {
+            this.pagescroll();
+        });
+    }
+}
+
+// pdf-document
+<template>
+    <require from = "../../attributes/pdf-attribute"></require>
+    <div if.bind="loadingSpinner" style="position: absolute; top: 2em; left: 50%; right: 50%;" >
+        <i class='fa fa-spin fa-spinner'></i>
+    </div>
+    <div show.bind="!loadingSpinner" element.ref="container" id.bind="fingerprint" class="pdf-container" pdf="pagescroll.call:pageHandler()" scroll.trigger="renderHandler() & debounce:100">
+        <div repeat.for="page of lastpage" class="text-center"> 
+            <canvas id="${fingerprint}-page${(page + 1)}"></canvas>
+        </div>
+    </div>
+</template>
+
+pageHandler() {
+	 this.page = renderObject.page.pageNumber;
+}
+
